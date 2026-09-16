@@ -1,0 +1,25 @@
+# Build artifacts (regenerate with `bash utils/compile.sh`)
+*.so
+*.o
+*.ninja
+*.ninja_deps
+*.ninja_log
+build/
+__pycache__/
+*.pyc
+
+# Per-task workspaces: kernels there are experiment outputs, not the reusable
+# environment. Regenerate them via agent_loop / run_smoke.py.
+tasks/
+
+# Large dataset (download separately, see README)
+dataset/data.parquet
+
+# Generated measurement outputs (regenerate with the scripts)
+*.json
+
+# Paper materials (not redistributable)
+paper/
+
+# Upstream clone (kept locally for reference only)
+archive/
