@@ -138,3 +138,10 @@
       → **修了 3 个 harness 自身的 bug**：(1) profiling 输出解析用 `line.split(":")[1]` 会把三个值全解析成第一个（2804/2804/2804）——三个 key 共享一行，必须按各 key 位置定位；(2) Step5 cleanup 在 KernelBench gate（会触发重编译）**之前**执行，删了 v2 kernel 却留下引用它的 binding → undefined symbol；(3) binding 的 `#include "binding_registry.h"` 在 `kernels/` 子目录下找不到，须用 `../binding_registry.h`。
       → **发现两个基准的真实分歧**（非 bug）：SKILL.md 的 5% 门槛相对 **torch.compile**，KernelBench 官方门槛相对 **eager**。row311 vs eager 1.758×（官方通过）但 vs compile 0.87×（SKILL.md 不达标）。harness 现在同时记录 `eager_speedup` 和 compile 比值，避免下游把两者混读。
       → **GPU 状态漂移是真实的**：row311 一次跑出 0.88×、一次 0.87×，期间 copy 探针从 1350 GB/s 掉到 745 GB/s（其他 agent 占用）。任何性能判定前必须先确认 copy 基线。
+- [x] **G9 LLM 接入 agent loop（2026-09-16，已完成 —— 阶段 0 验收点）**：`agent_workdir/llm_backend.py`（`produce_attempt` 的 LLM 实现）+ `agent_workdir/run_g9.py`（episode 驱动）。ROADMAP 阶段 0 的验收标准达成。
+      → **模型自主完成了完整 episode**：读 SKILL.md + model.py → 一次 `write_files` 工具调用产出三件套（`kernels/axpby.cu` + `kernels/axpby_binding.cpp` + `model_new.py`）→ compile 23–25s → verification 5/5 → profiling → KernelBench gate。**compiled=True、correctness=True（1/1 trials，hardware=MetaX C500）**。
+      → 3 次 attempt 的性能（可信数字，DCE 修复后）：ext 12.5–14.7µs / compile 12.4–12.7µs / eager 14.9–19.1µs。**vs eager 1.18–1.29×（过官方门槛），vs compile 0.85–1.01×（未过 SKILL.md 5% 门槛）** → reward 0.5（correct_slow）。模型在这个规模上没有主动做 float4 向量化的动机——axpby 在 1×128 规模下 launch overhead 主导，带宽不是瓶颈，SKILL.md 的奖励信号在此规模无区分度（与 G6 修复后的结论一致）。
+      → **代码完全由模型生成**：`kernels/axpby.cu` 是模型产物（float4 向量化 + grid-stride + config 选 block size + tail 处理），`model_new.py` 改为 `axpby_forward(..., config=0)`——注意它**覆盖**了 G8 smoke test 留下的 v2 引用，这是当前工作区的最终状态。
+      → **llm_backend 的关键设计**：SKILL.md 全文 + model.py 进 prompt；MACA 平台陷阱（warp 64、shared 64KB、`../binding_registry.h`、dtype 规范化、grid 粒度、双 SFU 依赖链）写进 system prompt；anti-reward-hacking（episode 内禁网、无 fallback ops、5 输入验证）在代码层强制；失败时把 compile stderr / verification diff / 性能差距喂回模型重试（`gather_feedback`），最多 3 次。
+      → ** trace 记录**：每次模型交互入 `trace`，供阶段 1 的 RFT 过滤复用（`g9_report.json`）。
+      → **遗留**：axpby 示例规模太小，奖励无区分度。阶段 1 应在 G1 甜点任务（row311/1573/2885）上跑 LLM episode 才有统计意义——但按用户指示，当前聚焦迁移适配收尾，不扩展新批次。

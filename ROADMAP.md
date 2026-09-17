@@ -1,7 +1,7 @@
 # CUDA-Agent → MetaX C500/MACA 迁移路线图
 
 **日期**：2026-09-16
-**状态**：组件①②已完成并自测；组件③（RL 训练管线）为下一阶段。
+**状态**：组件①②已完成并自测，**阶段 0（G9，LLM 接入 agent loop）已完成**；组件③（RL 训练管线）为下一阶段。
 
 论文（arXiv:2602.24286）的三大组件与我们的迁移状态：
 
@@ -24,7 +24,11 @@
 
 ---
 
-## 阶段 0：LLM 接入与单任务 rollout（G9）
+## 阶段 0：LLM 接入与单任务 rollout（G9）✅ 已完成
+
+**完成时间**：2026-09-16。`agent_workdir/llm_backend.py` + `run_g9.py`，axpby 示例上端到端 episode 通过（模型自主产出三件套 → compile → verification 5/5 → profiling → KernelBench gate `compiled=True, correctness=True`，hardware=MetaX C500）。遗留：axpby 规模太小、奖励无区分度，阶段 1 需在 G1 甜点任务上跑才有统计意义。
+
+---
 
 **为什么先做这个**：组件③ 的任何工作都以"模型能产出可用的 rollout"为前提。如果模型在 SKILL.md 约束下连单个任务都走不通，训练管线没有可收集的数据。这一步成本最低、信息量最大。
 

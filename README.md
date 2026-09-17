@@ -83,6 +83,25 @@ Verify the harness itself before trusting any rollout:
 python3 run_smoke.py    # feeds a known-good axpby attempt end to end
 ```
 
+### Driving it with a real model (stage 0)
+
+`llm_backend.py` implements the `produce_attempt` contract with an LLM: it
+hands the model the full SKILL.md and `model.py`, and requires one
+`write_files` tool call producing the three files. `run_g9.py` drives a full
+episode — the model writes files, the harness compiles / verifies / profiles /
+gates them, and on failure the compile stderr, verification diff, or
+performance gap goes back to the model for a retry (up to 3 attempts).
+
+```bash
+python3 run_g9.py                  # one LLM episode on the axpby example
+```
+
+The rollout trace is written to `g9_report.json` for later RFT filtering.
+Platform-specific failure modes (warp 64, shared 64 KB, `../binding_registry.h`,
+dtype normalization, grid granularity, chained-SFU dependency) are in the
+system prompt so the model is constrained the same way a rollout from the
+paper's agent is.
+
 ## Two baselines, do not conflate them
 
 SKILL.md's 5% bar is measured against **torch.compile**. The KernelBench
@@ -114,6 +133,8 @@ agent_workdir/        the ported environment (SKILL.md + tools + agent loop)
   SKILL.md            upstream workflow + MACA Supplement (port-specific notes)
   agent_loop.py       programmatic driver for the 5-step workflow
   run_smoke.py        harness self-test
+  llm_backend.py      LLM implementation of the produce_attempt contract
+  run_g9.py           one LLM-driven episode (stage 0)
   utils/              compile.sh / compile.py / verification.py / profiling.py
 dataset/              task-pool tooling (does not include data.parquet)
   pick_elementwise_ast.py   AST-based sweet-spot task picker
@@ -136,6 +157,13 @@ PHASE1_STATUS.md      first-phase report (build + correctness loop)
 All 5 G1 tasks compiled and passed correctness; the two that fail the gate are
 the chained-SFU cases (relu+softplus 0.54×, softplus+leaky 0.57×), consistent
 with the task typing above.
+
+The LLM-driven episode (`run_g9.py`) completed end to end on the axpby
+example: the model produced the three files itself, verification passed 5/5,
+and the KernelBench gate reported `compiled=True, correctness=True` on
+MetaX C500. At that problem size launch overhead dominates, so the kernel beat
+eager (1.18–1.29×) without beating `torch.compile` — the 5% bar needs a
+bandwidth-bound task to be discriminative.
 
 ## Known platform gotchas
 
