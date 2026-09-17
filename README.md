@@ -1,4 +1,4 @@
-# CUDA-Agent on MetaX C500 (MACA)
+# CUDA-Agent — MetaX C500 / MACA Port
 
 Port of the agent environment from [CUDA-Agent](https://arxiv.org/abs/2602.24286)
 (ByteDance Seed / Tsinghua AIR / SIA-Lab) to the MetaX C500 GPU with the MACA
