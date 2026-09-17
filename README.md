@@ -46,6 +46,19 @@ path) or `cucc` fails on `__macro_mxcc.h not found`:
 source /data/kda-maca/env.sh
 ```
 
+## Dataset
+
+The task pool is [CUDA-Agent-Ops-6K](https://hf-mirror.com/datasets/ByteDance-Seed/CUDA-Agent-Ops-6K)
+(6000 rows). It is **not** committed — download `data.parquet` into `dataset/`:
+
+```bash
+wget -O dataset/data.parquet \
+  https://hf-mirror.com/datasets/ByteDance-Seed/CUDA-Agent-Ops-6K/resolve/main/data.parquet
+```
+
+`huggingface.co` is unreachable from this network; use the mirror. Everything
+under `dataset/*.py` reads `dataset/data.parquet`.
+
 ## Running the example
 
 ```bash
@@ -136,7 +149,8 @@ agent_workdir/        the ported environment (SKILL.md + tools + agent loop)
   llm_backend.py      LLM implementation of the produce_attempt contract
   run_g9.py           one LLM-driven episode (stage 0)
   utils/              compile.sh / compile.py / verification.py / profiling.py
-dataset/              task-pool tooling (does not include data.parquet)
+dataset/              task-pool tooling (does not include data.parquet —
+                      download it separately, see below)
   pick_elementwise_ast.py   AST-based sweet-spot task picker
   actionable_tasks.csv      3396 tasks verified executable on this device
 ROADMAP.md            what remains, and the compute estimate for training
