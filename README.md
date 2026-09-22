@@ -196,6 +196,68 @@ bandwidth-bound task to be discriminative.
 - **`TORCH_CUDA_ARCH_LIST=9.0` from the upstream SKILL.md must not be used**
   — it is Hopper-specific. Leave unset; PyTorch auto-selects xcore1000.
 
+## Next steps
+
+The environment itself is complete and verified. What is not done is **using**
+it at scale. The order below is not optional — each step is the precondition
+for the next, and the first one is cheap.
+
+### 1. Persist complete rollout traces (small, do this first)
+
+`llm_backend.py` currently records only metadata per model exchange
+(`turn`, `stop_reason`, `produced`). It does **not** store the prompt text, the
+model's full output, or the tool-call arguments — so every episode is
+consumed and discarded. RFT / SFT needs (prompt, response, reward) triples;
+right now zero such records exist. This is the tail end of the environment
+port, not new work.
+
+**What to do**: extend `make_attempt_from_llm` to append the full user prompt,
+the raw assistant content blocks, and the extracted `write_files` input to
+`trace`, alongside the reward the harness computes for that attempt.
+
+### 2. Collect rollouts (fits on the 16 GB card)
+
+Episode collection is **compile-bound, not compute-bound** — each attempt is
+one 23–28 s cucc compile plus verification and profiling, not a training
+step. Measured per-episode wall time: ~67–71 s. Peak GPU memory for real
+dataset tasks: 0.13–8.66 GB, i.e. the 16.3 GB card holds 3–4 concurrent
+episodes.
+
+- Task pool: 3396 executable tasks (`dataset/actionable_tasks.csv`).
+- Use the G1 sweet-spot filter (`dataset/pick_elementwise_ast.py`) to select
+  first; G1 measured 3/5 tasks passing the official gate, so expect roughly
+  60% yield.
+- **Check the copy probe before any performance judgment** — this GPU is
+  shared and its baseline drifts between ~1350 and ~745 GB/s. A measurement
+  taken while another workload holds the card is noise.
+- Known non-winners to deprioritize: chained-SFU dependencies (`expf`→
+  `log1pf`), bool/int8 outputs (non-coalesced stores), conv / attention
+  (cuDNN owns these).
+
+### 3. Fine-tune a small policy model (needs the larger card)
+
+This is where the 16 GB card stops being enough.
+
+- 1.5B full fine-tune or 7B **QLoRA** fits on 16.3 GB, but only for a
+  smoke test — the training data does not exist yet (see step 1).
+- Full 7B fine-tune needs ~94 GB (weights + AdamW fp32 states + gradients +
+  activations), i.e. 4–5 of these cards, and that assumes the MACA
+  distributed stack (`torch.distributed` / a collective library) actually
+  works, which was never verified on this single-card host.
+- The upstream paper does **not** release its RL training code — verified
+  against the upstream repo, which contains only the agent workspace (14
+  files, no `ppo`/`reinforce`/`policy` code). Anything beyond data collection
+  is original work, not a port.
+
+### What was deliberately left out
+
+- No RL training pipeline. The paper's is not open-sourced; reproducing it is
+  a separate research project, not a port.
+- No multi-card verification. Only one C500 is visible on this host, so
+  interconnect topology and the MACA collective stack are untested.
+- No 128K-context training. KV cache for that alone approaches the whole
+  16.3 GB budget.
+
 ## License / attribution
 
 The upstream SKILL.md, workspace layout, and dataset are from the CUDA-Agent
