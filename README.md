@@ -219,9 +219,26 @@ the raw assistant content blocks, and the extracted `write_files` input to
 
 Episode collection is **compile-bound, not compute-bound** — each attempt is
 one 23–28 s cucc compile plus verification and profiling, not a training
-step. Measured per-episode wall time: ~67–71 s. Peak GPU memory for real
-dataset tasks: 0.13–8.66 GB, i.e. the 16.3 GB card holds 3–4 concurrent
-episodes.
+step. Measured per-episode wall time: ~67–71 s for the axpby example, ~515 s
+for a two-attempt real task (row 311). Peak GPU memory for real dataset
+tasks: 0.13–8.66 GB, i.e. the 16.3 GB card holds 3–4 concurrent episodes.
+
+`dataset/collect_rollouts.py` drives this. It does not require the caller to
+have sourced `env.sh` — it puts the workspace and kernelbench on `sys.path`
+itself. Output is append-only JSONL, so an interrupted run resumes:
+
+```bash
+# the G1 sweet-spot pool, verified by AST to be pure elementwise
+python3 dataset/collect_rollouts.py --from-csv dataset/g1_candidates.csv \
+    --n 10 --out rollouts.jsonl
+
+# or specific rows
+python3 dataset/collect_rollouts.py --rows 311,1573,2885 --out rollouts.jsonl
+```
+
+Each row is one (prompt, response, reward) triple for a model turn that
+produced files. Verified on row 311: 2 rows, both positive, KernelBench gate
+`compiled=True correctness=True`.
 
 - Task pool: 3396 executable tasks (`dataset/actionable_tasks.csv`).
 - Use the G1 sweet-spot filter (`dataset/pick_elementwise_ast.py`) to select
