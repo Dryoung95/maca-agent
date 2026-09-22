@@ -115,6 +115,46 @@ def run_llm_episode(workspace, task_name="g9", max_attempts=MAX_ATTEMPTS,
             "kernelbench": gate}
 
 
+def to_training_samples(summary):
+    """Flatten an episode summary into (prompt, response, reward) records.
+
+    One record per turn that produced files. The response is the model's
+    write_files call as given; the reward is the harness verdict for that
+    attempt. Downstream RFT/SFT consumes this list directly — the episode
+    report alone is not usable for training because its `trace` is nested by
+    attempt, not one row per supervised example.
+    """
+    samples = []
+    for h in summary.get("history", []):
+        trace = h.get("trace") or []
+        for turn in trace:
+            if "files" not in turn:
+                continue
+            assistant = next((b for b in turn.get("assistant", [])
+                              if b.get("type") == "tool_use"
+                              and b.get("name") == "write_files"), None)
+            if assistant is None:
+                continue
+            samples.append({
+                "task": summary.get("task"),
+                "attempt": h.get("attempt"),
+                "turn": turn.get("turn"),
+                "model": turn.get("model"),
+                "prompt": turn.get("user_prompt"),
+                "response": {"type": "tool_use",
+                             "name": "write_files",
+                             "input": assistant.get("input", {})},
+                "reward": h.get("reward"),
+                "reason": h.get("reason"),
+                "compiled": h.get("compiled"),
+                "correct": h.get("correct"),
+                "ext_us": h.get("ext_us"),
+                "compile_us": h.get("compile_us"),
+                "eager_us": h.get("eager_us"),
+            })
+    return samples
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--workspace", default=os.path.dirname(
@@ -123,6 +163,8 @@ def main():
     ap.add_argument("--max-attempts", type=int, default=MAX_ATTEMPTS)
     ap.add_argument("--model", default=None)
     ap.add_argument("--report", default="g9_report.json")
+    ap.add_argument("--samples", default=None,
+                    help="also write (prompt, response, reward) rows here")
     args = ap.parse_args()
 
     summary = run_llm_episode(args.workspace, task_name=args.task_name,
@@ -135,6 +177,17 @@ def main():
         print(f"  {h.get('attempt','?')}: compiled={h.get('compiled')} "
               f"correct={h.get('correct')} reward={h.get('reward')} "
               f"({h.get('reason','')})")
+
+    samples = to_training_samples(summary)
+    path = args.samples or os.path.join(
+        os.path.dirname(os.path.abspath(args.report)), "rollout_samples.jsonl")
+    with open(path, "w") as f:
+        for s in samples:
+            f.write(json.dumps(s, ensure_ascii=False, default=str) + "\n")
+    print(f"rollout samples: {len(samples)} row(s) -> {path}")
+    positive = [s for s in samples if (s.get("reward") or 0) >= 0.5]
+    print(f"  positive (reward>=0.5): {len(positive)}")
+
     with open(args.report, "w") as f:
         json.dump(summary, f, indent=2, default=str)
     return 0 if ok else 1

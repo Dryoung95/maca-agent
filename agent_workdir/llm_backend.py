@@ -151,29 +151,68 @@ def extract_attempt(resp):
     return None
 
 
+def _content_to_jsonable(content):
+    """Anthropic SDK content blocks -> plain JSON (text + tool_use inputs).
+
+    Everything needed for RFT lives in these two; the raw SDK objects are not
+    json-serializable, so they would be lost on dump.
+    """
+    out = []
+    for block in content or []:
+        kind = getattr(block, "type", None)
+        if kind == "text":
+            out.append({"type": "text", "text": block.text})
+        elif kind == "tool_use":
+            out.append({"type": "tool_use", "id": block.id,
+                        "name": block.name, "input": block.input})
+        elif kind == "thinking":
+            out.append({"type": "thinking",
+                        "text": getattr(block, "thinking", "")})
+    return out
+
+
 def make_attempt_from_llm(workspace, task_hint="", feedback="", model=None,
                           max_turns=3):
     """G9 produce_attempt: one LLM attempt with up to max_turns tool-call rounds.
 
-    Returns (Attempt, trace) where trace records every model exchange, so the
-    caller can store the rollout for later RFT filtering.
+    Returns (Attempt, trace). trace now carries the full RFT record per turn:
+    the prompt we sent, the model's complete response (text + tool inputs),
+    and the extracted file contents. Pair it with the reward the harness
+    computes for this attempt and you have a (prompt, response, reward)
+    triple; without the prompt/response text the rollout is not reusable.
     """
     from agent_loop import Attempt
 
     messages = []
     trace = []
     system = SYSTEM_PROMPT
+    model_id = model or os.environ.get("ANTHROPIC_MODEL",
+                                       "claude-sonnet-4-20250514")
 
     for turn in range(max_turns):
         user = build_user_prompt(workspace, task_hint, feedback if turn else "")
         messages.append({"role": "user", "content": user})
         resp = call_model(messages, system, model=model)
+        assistant_jsonable = _content_to_jsonable(resp.content)
+        # Keep the live SDK object in `messages` for the next turn's context,
+        # and store the plain-JSON copy in the trace for persistence.
         messages.append({"role": "assistant", "content": resp.content})
-        trace.append({"turn": turn, "stop_reason": resp.stop_reason})
+        trace.append({
+            "turn": turn,
+            "stop_reason": resp.stop_reason,
+            "model": model_id,
+            "user_prompt": user,
+            "assistant": assistant_jsonable,
+            "usage": getattr(resp, "usage", None) and {
+                "input_tokens": resp.usage.input_tokens,
+                "output_tokens": resp.usage.output_tokens,
+            },
+        })
 
         attempt_input = extract_attempt(resp)
         if attempt_input is None:
             feedback = "You did not call write_files. Call it with all three files."
+            trace[-1]["note"] = "no write_files call"
             continue
 
         name = attempt_input.get("kernel_name", "fused_kernel")
@@ -185,6 +224,11 @@ def make_attempt_from_llm(workspace, task_hint="", feedback="", model=None,
             model_new=attempt_input["model_new_py"],
         )
         trace[-1]["produced"] = name
+        trace[-1]["files"] = {
+            f"kernels/{name}.cu": attempt_input["kernel_cu"],
+            f"kernels/{name}_binding.cpp": attempt_input["binding_cpp"],
+            "model_new.py": attempt_input["model_new_py"],
+        }
         return attempt, trace
 
     raise RuntimeError(f"model did not produce files in {max_turns} turns")
