@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-
 import cuda_extension
 
 
@@ -8,9 +7,7 @@ class ModelNew(nn.Module):
 
     def __init__(self, alpha: float) -> None:
         super().__init__()
-        self.alpha = float(alpha)
+        self.alpha = alpha
 
     def forward(self, a, b):
-        # Single fused kernel: out = alpha * a + b
-        # Replaces two full-tensor memory passes (scale, then add) with one.
-        return cuda_extension.axpby_forward(a, b, self.alpha, config=0)
+        return cuda_extension.axpby_v2_forward(a, b, self.alpha, 0)
