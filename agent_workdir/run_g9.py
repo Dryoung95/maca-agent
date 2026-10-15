@@ -151,6 +151,20 @@ def to_training_samples(summary):
                 "ext_us": h.get("ext_us"),
                 "compile_us": h.get("compile_us"),
                 "eager_us": h.get("eager_us"),
+                # Both speedups, because a filter that reads `reward` alone
+                # cannot tell a `pass` from a `correct_slow`. reward 0.5 means
+                # "correct, under SKILL.md's 5%-vs-torch.compile bar"; the
+                # official gate's reference is eager, and these two disagree
+                # often enough that a correct_slow can still beat eager 1.9x
+                # (row 311). Deriving `eager_speedup` here keeps a downstream
+                # RFT filter from promoting a kernel that lost to
+                # torch.compile.
+                "compile_speedup": (h.get("compile_us") / h["ext_us"])
+                                   if h.get("compile_us") and h.get("ext_us")
+                                   else None,
+                "eager_speedup": (h.get("eager_us") / h["ext_us"])
+                                 if h.get("eager_us") and h.get("ext_us")
+                                 else None,
             })
     return samples
 

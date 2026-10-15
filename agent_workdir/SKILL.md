@@ -446,12 +446,15 @@ here, not a rounding effect.
 | Warp size | **64** | 32 |
 | SM count | 104 | 132 |
 | Shared memory per block | 64 KB | 227 KB |
-| Total device memory | 16.3 GB | 80 GB |
+| Total device memory | **64 GB on this host** (`get_device_properties(0).total_memory` = 68.28 GB = 63.59 GiB; `mx-smi` 65536 MiB with 416 MiB reserved). The C500 also ships as 16.3 GB — read the property, never infer it from the card name. Note GB vs GiB: 63.59 is the GiB figure. | 80 GB |
 
 - Any warp-level reasoning must divide by 64: `__shfl_sync` lane ranges, warp
   vote semantics, occupancy denominators.
 - Tiling windows sized for 227 KB of shared memory must be cut to ≤64 KB.
-- Workloads sized for 48–80 GB boards OOM here. That is a capacity limit
+- Do not assume the memory budget from the card name: the 16.3 GB variant was
+  the reason workloads sized for 48–80 GB boards were excluded here, and on a
+  64 GB board that exclusion does not hold. Measure, and size for the board
+  actually visible. If a task does OOM, that is a capacity limit
   (`invalid_infrastructure`), not a backend bug.
 
 ### Baseline measurement caveat (important for reward integrity)

@@ -1,0 +1,7 @@
+row 3579 model=Atria-Dawn-Preview prompt=21663 chars
+sweep: [16384, 24576, 32768, 49152, 65536]
+
+--- max_tokens=16384 ---
+  ERROR after 0.0s: NameError: name 'SYSTEM_PROMPT' is not defined
+
+-> /data/maca-agent/rollouts/stream_sweep.json

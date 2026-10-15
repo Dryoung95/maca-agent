@@ -60,8 +60,20 @@ def _consume(out, sink):
     # forward() may return a tensor or a nested list/tuple of tensors.
     # Every output must reach the sink or the backend eliminates the work
     # (device-side DCE) and reports a runtime constant w.r.t. problem size.
+    #
+    # But read ONE ELEMENT, not out.sum(). sum() is itself a full reduction
+    # over the output, so it adds a constant ~685 us at n=262M to *both* the
+    # baseline and the extension. A constant added to both compresses every
+    # speedup, because it is a larger share of the faster kernel (24% of
+    # eager, 46% of the extension on row 311). Measured on row 311 with the
+    # card idle (copy 1351 GB/s):
+    #     discard  ext/eager 1.920x   <- matches the KernelBench gate
+    #     sum()    ext/eager 1.627x   <- what out.sum() reported
+    #     1-elem   ext/eager 1.916x   <- +3.7 us vs discard, keeps the dependency
+    # The one-element read is the dependency-preserving form that costs nothing.
     if isinstance(out, torch.Tensor):
-        sink.add_(out.sum())
+        if out.numel() > 0:
+            sink.add_(out.flatten()[0])
     elif isinstance(out, (list, tuple)):
         for o in out:
             _consume(o, sink)

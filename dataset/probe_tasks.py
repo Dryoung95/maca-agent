@@ -10,6 +10,11 @@ import json
 import time
 
 import torch
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import paths
 
 ROWS = [2341, 3313, 5345, 1350, 1052, 5488, 3293, 4355, 3853, 3302]
 MIN_FREE_GB = 4.0
@@ -76,7 +81,7 @@ def run_one(code):
 
 def main():
     import pandas as pd
-    df = pd.read_parquet("/data/cuda-agent-migration/dataset/data.parquet")
+    df = paths.load_dataframe()
     results = {}
     for row in ROWS:
         if free_gb() < MIN_FREE_GB:
@@ -95,7 +100,7 @@ def main():
             print(f"FAIL {type(e).__name__}: {str(e)[:80]}")
         gc.collect()
         torch.cuda.empty_cache()
-    with open("/data/cuda-agent-migration/a3_task_probe.json", "w") as f:
+    with open(os.path.join(paths.REPO_ROOT, "a3_task_probe.json"), "w") as f:
         json.dump(results, f, indent=2)
     print(json.dumps(results, indent=2))
 

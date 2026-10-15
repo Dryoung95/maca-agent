@@ -1,0 +1,16 @@
+
+=== row 3579 (66.72 GB free) ===
+11:24:08 - LiteLLM:WARNING: get_model_cost_map.py:315 - LiteLLM: model cost map fetch attempt 1/3 failed (ReadTimeout fetching https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: The read operation timed out); retrying in 2.0s
+11:24:08 - LiteLLM:WARNING: get_model_cost_map.py:672 - LiteLLM: Failed to fetch remote model cost map from https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: ReadTimeout fetching https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: The read operation timed out. Falling back to local backup.
+
+--- [row3579] LLM attempt 1/3 ---
+11:24:20 - LiteLLM:WARNING: get_model_cost_map.py:315 - LiteLLM: model cost map fetch attempt 2/3 failed (ReadTimeout fetching https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: The read operation timed out); retrying in 4.2s
+11:24:29 - LiteLLM:WARNING: get_model_cost_map.py:593 - LiteLLM: Failed to fetch remote model cost map from https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json after 3 attempts; keeping local backup
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.7s]
+
+--- [row3579] LLM attempt 2/3 ---
+    [trace] wrote /data/maca-agent/tasks/row3579/trace_dump_nowrite_turn0_1791977879.json
+    model call failed: KeyError: 'kernel_cu'
+row 3579: 1 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [1418s]
+
+=== done: 0 passed, 1 failed, 0 skipped ===

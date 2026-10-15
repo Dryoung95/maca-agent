@@ -1,0 +1,19 @@
+row 3579 max_tokens=16384 model=Atria-Dawn-Preview
+prompt 21663 chars, SKILL.md 21089 bytes
+  [stream 首个事件 1.7s 类型=message_start]
+  [    1.7s] message_start
+  [  252.6s] message_delta
+    message_delta: usage=MessageDeltaUsage(cache_creation_input_tokens=None, cache_read_input_tokens=None, input_tokens=6084, output_tokens=16384, output_tokens_details=None, server_tool_use=None) stop=max_tokens
+  [  252.6s] message_stop
+  [  252.6s] message_delta
+    message_delta: usage=MessageDeltaUsage(cache_creation_input_tokens=None, cache_read_input_tokens=0, input_tokens=6084, output_tokens=16384, output_tokens_details=None, server_tool_use=None) stop=None
+
+=== 完成 252.8s (4.2 min) ===
+stop_reason: None
+input_tokens: 6084
+output_tokens: 16384
+平均吞吐: 64.8 tok/s
+content blocks: []
+write_files: NO —— 模型没有产出工具调用
+text_chars=0 first_event=1.7s
+-> rollouts/stream_probe_result.json

@@ -1,0 +1,7 @@
+row 3579 model=Atria-Dawn-Preview prompt=21663 chars
+sweep: [18432, 20480]
+
+--- max_tokens=18432 ---
+  ERROR after 607.1s: RemoteProtocolError: peer closed connection without sending complete message body (incomplete chunked read)
+
+-> /data/maca-agent/rollouts/stream_sweep.json

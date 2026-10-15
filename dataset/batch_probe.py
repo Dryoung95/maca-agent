@@ -9,6 +9,11 @@ import json
 import time
 
 import torch
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import paths
 
 ROWS = [2884, 3826, 4993, 1904, 5539, 1527, 2112, 2063, 3065, 4659,
         1696, 5980, 3314, 5043, 2931, 3321, 4631, 3711, 4822, 2947]
@@ -22,7 +27,7 @@ def free_gb():
 
 def main():
     import pandas as pd
-    df = pd.read_parquet("/data/cuda-agent-migration/dataset/data.parquet")
+    df = paths.load_dataframe()
     results = {}
     for row in ROWS:
         if free_gb() < MIN_FREE_GB:
@@ -79,7 +84,7 @@ def main():
               f"({r['wall_s']}s) {r.get('ops','')}")
         gc.collect()
         torch.cuda.empty_cache()
-    json.dump(results, open("/data/cuda-agent-migration/c2_batch_probe.json", "w"), indent=2)
+    json.dump(results, open(os.path.join(paths.REPO_ROOT, "c2_batch_probe.json"), "w"), indent=2)
     ok = sum(1 for v in results.values() if v.get("exec_ok"))
     cok = sum(1 for v in results.values() if v.get("compile_ok"))
     print(f"\nTOTAL: eager {ok}/{len(results)}  compile {cok}/{len(results)}")

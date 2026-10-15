@@ -24,13 +24,17 @@ import sys
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-MIGRATION = os.path.dirname(HERE)
-AGENT_WORKDIR = os.path.join(MIGRATION, "agent_workdir")
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+import paths
+
+MIGRATION = paths.REPO_ROOT
+AGENT_WORKDIR = paths.AGENT_WORKDIR
 
 # This script must not depend on the caller having sourced env.sh. The
 # kernelbench import in agent_loop needs that path on sys.path, and without
 # the workspace on the path model_new.py cannot import cuda_extension.
-_KERNELBENCH_SRC = "/data/cuda-harness-migration/KernelBench/src"
+_KERNELBENCH_SRC = paths.require_kernelbench_src()
 for _p in (AGENT_WORKDIR, _KERNELBENCH_SRC):
     if _p not in sys.path:
         sys.path.insert(0, _p)
@@ -38,7 +42,21 @@ for _p in (AGENT_WORKDIR, _KERNELBENCH_SRC):
 # Episode peak memory measured on real tasks: 0.13-8.66 GB. Require this much
 # free before starting another one; the card is shared and other agents load
 # it unpredictably (LOOP_PLAN G1: copy baseline drifted 1350 -> 745 GB/s).
-MIN_FREE_GB = 9.0
+#
+# This was 9.0 flat, tuned for the 16.3 GB card where it held the pool to one
+# episode at a time. C500 also ships as 64 GB (63.59 GB visible here), where
+# 9.0 stops binding entirely. Keep 9.0 on the small card (no regression) but
+# reserve a fifth of the card on larger ones, so concurrent collectors cannot
+# starve other tenants. Overridable per run with --min-free-gb.
+_TOTAL_GB = paths.total_mem_gb()
+MIN_FREE_GB = 9.0 if _TOTAL_GB is None or _TOTAL_GB < 32 \
+    else round(_TOTAL_GB * 0.20, 1)
+
+# SKILL.md Step 4: at least 5% faster than torch.compile. compute_reward keys
+# the milestone reward off this ratio, but reports 0.5 for everything below it
+# that is still correct, so a filter needs the ratio itself.
+_PASS_BAR = 1.05
+
 
 # torch.compile warm-up and the extension build both allocate; this is the
 # guard for a *new* episode, not the peak during one.
@@ -191,7 +209,7 @@ def main():
         return 2
 
     import pandas as pd
-    df = pd.read_parquet(os.path.join(MIGRATION, "dataset", "data.parquet"))
+    df = paths.load_dataframe()
 
     os.makedirs(args.tasks_root, exist_ok=True)
     ok = fail = skipped = 0
@@ -243,10 +261,19 @@ def main():
                 s["dataset_row"] = rid
                 f.write(json.dumps(s, ensure_ascii=False, default=str) + "\n")
 
+        # The console line distinguishes both baselines. reward>=0.5 is
+        # correct-under-the-bar, which is fine for SFT but NOT a SKILL.md pass:
+        # compute_reward gives 0.5 ("correct_slow") to a kernel that lost to
+        # torch.compile while beating eager by 1.9x (row 311), so reading
+        # `reward` alone would over-count positives. `passed` is the real bar.
         good = [s for s in samples if (s.get("reward") or 0) >= 0.5]
+        passed = [s for s in samples
+                  if (s.get("compile_speedup") or 0) >= _PASS_BAR
+                  and s.get("correct")]
         gate = bool(summary.get("kernelbench", {}).get("correctness"))
-        print(f"row {rid}: {len(samples)} row(s), {len(good)} positive "
-              f"(reward>=0.5), kernelbench={gate} "
+        print(f"row {rid}: {len(samples)} row(s), {len(good)} correct "
+              f"(reward>=0.5), {len(passed)} passed bar (compile>="
+              f"{_PASS_BAR:.2f}x), kernelbench={gate} "
               f"[{time.time()-t0:.0f}s]", flush=True)
         ok += 1 if gate else 0
         if not gate:

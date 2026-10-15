@@ -7,8 +7,13 @@ inside get_inputs() through that namespace.
 """
 import ast
 import json
+import os
+import sys
 
 import pandas as pd
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import paths
 
 try:
     from tqdm import tqdm
@@ -119,7 +124,7 @@ def param_shapes(tree):
 
 
 def main():
-    df = pd.read_parquet("/data/cuda-agent-migration/dataset/data.parquet")
+    df = paths.load_dataframe()
     rows = []
     for i in tqdm(df.index, desc="mem budget"):
         code = df.at[i, "code"]
@@ -173,7 +178,7 @@ def main():
         else "le6GB" if r.est_bytes <= 6e9
         else "le12GB" if r.est_bytes <= 12e9
         else "over16GB", axis=1)
-    out.to_csv("/data/cuda-agent-migration/dataset/mem_budget.csv", index=False)
+    out.to_csv(os.path.join(paths.DATASET_DIR, "mem_budget.csv"), index=False)
     print("\n=== grade counts ===")
     print(out.grade.value_counts())
     print("\n=== est_bytes (nonzero) ===")

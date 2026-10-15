@@ -9,6 +9,11 @@ import gc
 import re
 
 import torch
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import paths
 
 MIN_FREE_GB = 4.0
 TARGET_BATCH = {38: 256, 90: 256, 130: 64, 143: 256, 193: 96, 212: 160}
@@ -28,9 +33,9 @@ def rewrite_batch(code, name, new_val):
 
 def main():
     import pandas as pd
-    df = pd.read_parquet("/data/cuda-agent-migration/dataset/data.parquet")
-    ds = pd.read_csv("/data/cuda-agent-migration/dataset/downsize_analysis.csv").set_index("row")
-    mb = pd.read_csv("/data/cuda-agent-migration/dataset/mem_budget.csv").set_index("row")
+    df = paths.load_dataframe()
+    ds = pd.read_csv(os.path.join(paths.DATASET_DIR, "downsize_analysis.csv")).set_index("row")
+    mb = pd.read_csv(os.path.join(paths.DATASET_DIR, "mem_budget.csv")).set_index("row")
 
     results = {}
     for row, want in TARGET_BATCH.items():
@@ -72,7 +77,7 @@ def main():
         torch.cuda.empty_cache()
 
     import json
-    json.dump(results, open("/data/cuda-agent-migration/e2b_downsize_verify.json", "w"),
+    json.dump(results, open(os.path.join(paths.REPO_ROOT, "e2b_downsize_verify.json"), "w"),
               indent=2)
     ok = sum(1 for v in results.values() if v.get("within_budget"))
     print(f"\nTOTAL within 10GB budget: {ok}/{len(results)}")

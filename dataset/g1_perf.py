@@ -9,7 +9,9 @@ import os
 import sys
 import time
 
-import pandas as pd
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import paths
+
 import torch
 
 TARGETS = {
@@ -19,7 +21,8 @@ TARGETS = {
     494: "fused_softplus_leaky_relu_forward",
     311: "fused_leaky_relu_leaky_relu_forward",
 }
-BASE = "/data/cuda-agent-migration/tasks"
+# Per-task workspaces (built by collect_rollouts.py / the agent loop).
+BASE = paths.tasks_root()
 
 
 def load_ext(rid):
@@ -50,7 +53,7 @@ def time_fn(fn, args, iters=50):
 
 
 def main():
-    df = pd.read_parquet("dataset/data.parquet")
+    df = paths.load_dataframe()
 
     # 带宽上限探针：纯 copy（读+写）
     probe = torch.randn(200_000_000, device="cuda")

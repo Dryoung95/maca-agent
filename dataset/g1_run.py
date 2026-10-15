@@ -8,10 +8,14 @@ import json
 import os
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import paths
+
 from kernelbench.eval import eval_kernel_against_ref
 
 TARGETS = [2885, 1573, 480, 494, 311]
-BASE = "/data/cuda-agent-migration/tasks"
+# Per-task workspaces (built by collect_rollouts.py / the agent loop).
+BASE = paths.tasks_root()
 
 
 def main():

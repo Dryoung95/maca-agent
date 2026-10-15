@@ -1,0 +1,20 @@
+row 3579: already in rollouts/g1_pilot.jsonl, skipping
+
+=== row 1193 (66.72 GB free) ===
+
+--- [row1193] LLM attempt 1/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [19.1s]
+
+--- [row1193] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [19.0s]
+
+--- [row1193] LLM attempt 3/3 ---
+    model call failed: KeyError: 'model_new_py'
+row 1193: 2 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [830s]
+
+=== row 518 (66.72 GB free) ===
+
+--- [row518] LLM attempt 1/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.7s]
+
+--- [row518] LLM attempt 2/3 ---

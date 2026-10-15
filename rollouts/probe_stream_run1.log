@@ -1,0 +1,8 @@
+row 3579 max_tokens=16384 model=Atria-Dawn-Preview
+prompt 21663 chars, SKILL.md 21089 bytes
+  [stream 首个事件 9.5s 类型=message_start]
+  [    9.5s] message_start
+
+=== 异常 609.4s (10.2 min) ===
+RemoteProtocolError: peer closed connection without sending complete message body (incomplete chunked read)
+first_event_at=9.496065139770508 text_chars=0 deltas~0

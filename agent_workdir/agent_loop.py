@@ -31,7 +31,20 @@ from pathlib import Path
 
 import torch
 
-sys.path.insert(0, "/data/cuda-agent-migration")
+# KernelBench's src on sys.path. Prefer the env var set by env.sh; fall back to
+# the current layout (sibling maca-harness repo) and to the historical path.
+def _kernelbench_src():
+    p = os.environ.get("KERNELBENCH_SRC")
+    cands = [p, "/data/maca-harness/KernelBench/src",
+             "/data/cuda-harness-migration/KernelBench/src"]
+    for c in cands:
+        if c and os.path.isdir(os.path.join(c, "kernelbench")):
+            return c
+    raise SystemExit(
+        "KernelBench source not on sys.path (kernelbench.eval is the official "
+        "eval gate). Set KERNELBENCH_SRC or source env.sh.")
+
+sys.path.insert(0, _kernelbench_src())
 from kernelbench.eval import eval_kernel_against_ref
 
 # SKILL.md Step 4: "Must be at least 5% faster than torch.compile baseline"

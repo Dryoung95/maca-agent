@@ -17,6 +17,7 @@ import json
 import os
 import re
 import sys
+import time
 
 # Network is forbidden mid-episode (paper's anti-hacking rule). The SDK may
 # still be imported; we only block outbound calls after episode start.
@@ -79,7 +80,18 @@ easy to get wrong on THIS device and will fail your build or correctness check:
   the computation or expect to lose.
 
 The reference model is provided as model.py. Do not modify it, utils/, \
-binding.cpp, or binding_registry.h."""
+binding.cpp, or binding_registry.h.
+- `REGISTER_BINDING(name, func)` expands to a static declaration, so the call
+  MUST end with a semicolon: `REGISTER_BINDING(k, register_k);`. Omitting it
+  fails the build with a confusing `expected ',' or ';' at end of input`
+  pointed at `binding_registry.h` — the real cause is your missing semicolon,
+  not the header.
+
+Keep your text analysis SHORT — a few sentences: the op shape, the memory \
+traffic to remove, the vectorization choice. Put the actual kernel, binding, \
+and model_new code in the write_files call, never in the text. Writing the \
+kernel out in prose runs you out of tokens before you can call the tool, \
+which produces no files and wastes the turn."""
 
 
 def _read(path):
@@ -127,20 +139,169 @@ def build_user_prompt(workspace, task_hint="", feedback=""):
     return "\n".join(parts)
 
 
-def call_model(messages, system, max_tokens=8192, model=None):
-    """One model call. Raises on failure — the loop treats that as a failed turn."""
-    from anthropic import Anthropic
+def call_model(messages, system, max_tokens=16384, model=None):
+    """One model call. Raises on failure — the loop treats that as a failed turn.
 
-    client = Anthropic()  # picks up ANTHROPIC_BASE_URL / ANTHROPIC_AUTH_TOKEN
+    Three things that had to be right simultaneously, each of which separately
+    looked like a different bug:
+
+    **thinking must be disabled.** This endpoint enables extended thinking by
+    default, and with it on the model burns the ENTIRE output budget on
+    hidden reasoning: the stream contains no content_block_* events at all,
+    yet output_tokens runs to the max and stop_reason=max_tokens. No
+    write_files call is ever emitted. That is what actually broke row 3579 —
+    not the token limit. 8192 truncates, 16384 truncates, and 16384 over the
+    non-streaming path dies at the 45-minute gateway cutoff first. With
+    thinking disabled the same task completes in 2623 output tokens.
+
+    max_tokens stays 16384 even though real usage is ~3k: the model writes a
+    text analysis before the tool call, and that preamble varies enough that
+    8192 intermittently truncates it (observed on row 3579 attempt 2 turn 0).
+    The headroom is cheap because a 3k-token stream finishes in ~2 min; the
+    limit only matters when it is actually reached.
+
+    **streaming, not messages.create.** Two independent reasons. (1) Speed:
+    the non-streaming path makes the gateway buffer the whole generation, and
+    throughput drops to ~7-16 tok/s; streaming runs ~22-97 tok/s, a 5x
+    difference. (2) The gateway cuts any connection — streaming or not — at
+    a hard ~600s, so any non-streaming call long enough to matter is
+    uncompletable. A 16k-token stream survives only because streaming makes
+    it fast enough to finish first; the real fix was disabling thinking.
+
+    **retry transient transport faults.** A 502 from the proxy used to cost
+    the whole episode, since run_g9 treats a raised exception as a failed
+    attempt. 5xx/429/conn/timeout retry up to 3 times (10/30/90s backoff);
+    other 4xx raise immediately.
+    """
+    from anthropic import Anthropic
+    from anthropic import (APIConnectionError, APIStatusError,
+                           APITimeoutError)
+
+    client = Anthropic(timeout=1800.0)
     model = model or os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
-    resp = client.messages.create(
+
+    RETRIES = 3
+    wait = [10, 30, 90]
+    last = None
+    for attempt in range(RETRIES):
+        try:
+            return _stream_one(client, model, messages, system, max_tokens)
+        except APIConnectionError as e:
+            last = e          # proxy refused / dropped: request never landed
+        except APITimeoutError as e:
+            last = e
+        except APIStatusError as e:
+            # 5xx and 429 are the gateway's problem; anything else is ours
+            # (bad request, auth) and must not be retried.
+            if e.status_code < 500 and e.status_code != 429:
+                raise
+            last = e
+        if attempt + 1 < RETRIES:
+            print(f"    [llm] transient {type(last).__name__} "
+                  f"({getattr(last, 'status_code', 'n/a')}), "
+                  f"retry {attempt + 2}/{RETRIES} in {wait[attempt]}s",
+                  flush=True)
+            time.sleep(wait[attempt])
+    raise last
+
+
+class _TextBlock:
+    def __init__(self, text):
+        self.type = "text"
+        self.text = text
+
+
+class _ToolBlock:
+    def __init__(self, id_, name, input_):
+        self.type = "tool_use"
+        self.id = id_
+        self.name = name
+        self.input = input_
+
+
+class _Usage:
+    def __init__(self, input_tokens, output_tokens):
+        self.input_tokens = input_tokens
+        self.output_tokens = output_tokens
+
+
+class _Message:
+    """The shape extract_attempt / _content_to_jsonable / run_g9 expect."""
+    def __init__(self, content, stop_reason, usage):
+        self.content = content
+        self.stop_reason = stop_reason
+        self.usage = usage
+
+
+def _stream_one(client, model, messages, system, max_tokens):
+    """One streaming request; content accumulated from SSE events.
+
+    get_final_message() is NOT used: on this gateway it can come back with an
+    empty content list (the message_delta/message_stop ordering is off), so
+    the blocks are rebuilt from the events themselves.
+    """
+    blocks = {}          # index -> {"type","id","name", text/json accumulator}
+    order = []           # keep insertion order for the final content list
+    stop_reason = None
+    out_tokens = in_tokens = 0
+
+    with client.messages.stream(
         model=model,
         max_tokens=max_tokens,
         system=system,
+        thinking={"type": "disabled"},
         tools=[TOOL_SCHEMA],
         messages=messages,
-    )
-    return resp
+    ) as stream:
+        for event in stream:
+            k = event.type
+            if k == "message_start":
+                in_tokens = event.message.usage.input_tokens
+            elif k == "content_block_start":
+                b = event.content_block
+                idx = event.index
+                blocks[idx] = {"type": b.type,
+                               "id": getattr(b, "id", ""),
+                               "name": getattr(b, "name", ""),
+                               "buf": ""}
+                order.append(idx)
+            elif k == "content_block_delta":
+                d = event.delta
+                dt = getattr(d, "type", "?")
+                cell = blocks.get(event.index)
+                if cell is None:
+                    continue
+                if dt == "text_delta":
+                    cell["buf"] += d.text
+                elif dt == "input_json_delta":
+                    cell["buf"] += d.partial_json
+            elif k == "message_delta":
+                if getattr(event.usage, "output_tokens", None):
+                    out_tokens = event.usage.output_tokens
+                if event.delta.stop_reason:
+                    stop_reason = event.delta.stop_reason
+
+    content = []
+    for idx in order:
+        cell = blocks[idx]
+        if cell["type"] == "text":
+            content.append(_TextBlock(cell["buf"]))
+        elif cell["type"] == "tool_use":
+            try:
+                payload = json.loads(cell["buf"]) if cell["buf"] else {}
+            except json.JSONDecodeError:
+                # Truncated mid-JSON. Do NOT fabricate a tool_use with a
+                # partial payload: extract_attempt would accept it and the
+                # caller would KeyError on the missing fields. Report it as
+                # text so the turn loop treats this as "no write_files call"
+                # and asks the model again.
+                content.append(_TextBlock(
+                    f"[truncated tool_use for {cell['name']}, "
+                    f"{len(cell['buf'])} chars of JSON arrived]"))
+                continue
+            content.append(_ToolBlock(cell["id"], cell["name"], payload))
+
+    return _Message(content, stop_reason, _Usage(in_tokens, out_tokens))
 
 
 def extract_attempt(resp):
@@ -171,6 +332,47 @@ def _content_to_jsonable(content):
     return out
 
 
+def _content_to_api(content):
+    """Content blocks -> the assistant-message shape the API accepts on input.
+
+    The API's assistant role takes content as a list of block dicts. Tool
+    blocks need their id back so the next turn can be paired with a
+    tool_result if one is ever needed. This is a separate function from
+    _content_to_jsonable because the two consumers differ: the trace is for
+    persistence, this is for the request body.
+    """
+    out = []
+    for block in content or []:
+        kind = getattr(block, "type", None)
+        if kind == "text":
+            out.append({"type": "text", "text": block.text})
+        elif kind == "tool_use":
+            out.append({"type": "tool_use", "id": block.id,
+                        "name": block.name, "input": block.input})
+    return out
+
+
+def _dump_trace(workspace, trace, tag=""):
+    """Persist a partial trace next to the workspace.
+
+    A turn that produces no write_files call, or an attempt that exhausts its
+    turns, is the expensive failure mode on this endpoint: each model call is
+    tens of minutes. Without a dump the model's actual output is discarded, so
+    the failure is undiagnosable -- 104 minutes of row 3579 produced only the
+    string "model did not produce files in 3 turns". Written to the workspace
+    itself (not the repo) so it survives the episode and never pollutes git.
+    """
+    try:
+        import time as _t
+        path = os.path.join(
+            workspace, f"trace_dump_{tag}_{int(_t.time())}.json")
+        with open(path, "w") as f:
+            json.dump(trace, f, indent=1, default=str)
+        print(f"    [trace] wrote {path}", flush=True)
+    except Exception as e:  # diagnosis must never kill the episode
+        print(f"    [trace] dump failed: {type(e).__name__}: {e}", flush=True)
+
+
 def make_attempt_from_llm(workspace, task_hint="", feedback="", model=None,
                           max_turns=3):
     """G9 produce_attempt: one LLM attempt with up to max_turns tool-call rounds.
@@ -190,13 +392,23 @@ def make_attempt_from_llm(workspace, task_hint="", feedback="", model=None,
                                        "claude-sonnet-4-20250514")
 
     for turn in range(max_turns):
-        user = build_user_prompt(workspace, task_hint, feedback if turn else "")
+        # The cross-attempt feedback (compile stderr / verification diff /
+        # performance gap from run_g9) arrives via `feedback` and MUST be
+        # passed on turn 0. The previous form, `feedback if turn else ""`,
+        # suppressed it on the first turn — and since most attempts produce
+        # files on turn 0 and return immediately, the model never saw why
+        # its last attempt failed. Observed on row 1582: three attempts,
+        # byte-identical 21811-char prompts, the same undeclared-identifier
+        # error each time.
+        user = build_user_prompt(workspace, task_hint, feedback)
         messages.append({"role": "user", "content": user})
         resp = call_model(messages, system, model=model)
         assistant_jsonable = _content_to_jsonable(resp.content)
-        # Keep the live SDK object in `messages` for the next turn's context,
-        # and store the plain-JSON copy in the trace for persistence.
-        messages.append({"role": "assistant", "content": resp.content})
+        # Feed the next turn an API-shaped assistant message. The API accepts
+        # a plain list of content-block dicts for the assistant role, which is
+        # what _content_to_jsonable already produces.
+        messages.append({"role": "assistant",
+                         "content": _content_to_api(resp.content)})
         trace.append({
             "turn": turn,
             "stop_reason": resp.stop_reason,
@@ -211,8 +423,26 @@ def make_attempt_from_llm(workspace, task_hint="", feedback="", model=None,
 
         attempt_input = extract_attempt(resp)
         if attempt_input is None:
-            feedback = "You did not call write_files. Call it with all three files."
+            feedback = ("You did not call write_files. Call it once with all "
+                        "three files as the tool input.")
             trace[-1]["note"] = "no write_files call"
+            _dump_trace(workspace, trace, tag=f"nowrite_turn{turn}")
+            continue
+
+        # A write_files call missing a required field is a recoverable turn,
+        # not a dead attempt: run_g9 would KeyError here and break the whole
+        # episode, discarding the remaining attempts. Ask the model to
+        # complete the call instead.
+        missing = [f for f in ("kernel_cu", "binding_cpp", "model_new_py")
+                   if not attempt_input.get(f)]
+        if missing:
+            feedback = (
+                "Your write_files call is missing required field(s): "
+                f"{', '.join(missing)}. Re-call write_files with all four "
+                "fields (kernel_cu, binding_cpp, model_new_py, kernel_name)."
+            )
+            trace[-1]["note"] = f"missing fields: {missing}"
+            _dump_trace(workspace, trace, tag=f"missing_turn{turn}")
             continue
 
         name = attempt_input.get("kernel_name", "fused_kernel")
@@ -231,6 +461,7 @@ def make_attempt_from_llm(workspace, task_hint="", feedback="", model=None,
         }
         return attempt, trace
 
+    _dump_trace(workspace, trace, tag=f"exhausted_{max_turns}turns")
     raise RuntimeError(f"model did not produce files in {max_turns} turns")
 
 

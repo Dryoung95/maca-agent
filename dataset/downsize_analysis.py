@@ -9,6 +9,11 @@ import ast
 import json
 
 import pandas as pd
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import paths
 
 BUDGET_GB = 10.0   # leave headroom: 16.3 total, other agents may use the card
 
@@ -31,9 +36,9 @@ def find_batch_assigns(tree):
 
 
 def main():
-    bud = pd.read_csv("/data/cuda-agent-migration/dataset/mem_budget.csv")
+    bud = pd.read_csv(os.path.join(paths.DATASET_DIR, "mem_budget.csv"))
     over = bud[(bud.grade == "over16GB") & (bud.est_bytes > 0)]
-    df = pd.read_parquet("/data/cuda-agent-migration/dataset/data.parquet")
+    df = paths.load_dataframe()
 
     rows = []
     for _, r in over.iterrows():
@@ -77,7 +82,7 @@ def main():
         rows.append(rec)
 
     out = pd.DataFrame(rows)
-    out.to_csv("/data/cuda-agent-migration/dataset/downsize_analysis.csv",
+    out.to_csv(os.path.join(paths.DATASET_DIR, "downsize_analysis.csv"),
                index=False)
     print("over-16GB tasks analyzed:", len(out))
     print("with a batch constant:", out.batch_val.notna().sum())

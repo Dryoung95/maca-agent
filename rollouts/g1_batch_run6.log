@@ -1,0 +1,26 @@
+
+=== row 1384 (66.72 GB free) ===
+
+--- [row1384] LLM attempt 1/3 ---
+    compiled=True correct=True ext=6544.1us compile=7232.8us -> reward 1.0 (pass_1.11x_vs_compile) [75.7s]
+    [GATE PASSED] 1.11x
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=6.56ms ref=4.33ms
+row 1384: 1 row(s), 1 correct (reward>=0.5), 1 passed bar (compile>=1.05x), kernelbench=True [151s]
+
+=== row 2678 (65.04 GB free) ===
+
+--- [row2678] LLM attempt 1/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.8s]
+
+--- [row2678] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.0s]
+
+--- [row2678] LLM attempt 3/3 ---
+    compiled=True correct=False ext=0.0us compile=0.0us -> reward 0.1 (compiled_but_incorrect) [36.3s]
+row 2678: 3 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [140s]
+
+=== done: 1 passed, 1 failed, 0 skipped ===

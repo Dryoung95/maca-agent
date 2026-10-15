@@ -1,0 +1,14 @@
+workspace ready: /data/maca-agent/rollouts/repro_row3579
+model.py 头 8 行:
+    import torch
+    import torch.nn as nn
+    
+    
+    class Model(nn.Module):
+        def __init__(self):
+            super().__init__()
+    
+
+prompt 长度: 21663 字符
+SKILL.md 大小: 21089 bytes
+    [llm] transient InternalServerError (502), retry 2/3 in 10s
