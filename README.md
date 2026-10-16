@@ -316,10 +316,11 @@ rechecked under the official protocol
 
 | | API model (claude-sonnet-4) | SFT Qwen2.5-Coder-1.5B (12 positives) |
 |---|---|---|
-| tasks with ≥1 correct kernel | 18 / 26 (69%) | 0 / 10 (first 10 tasks) |
+| tasks with ≥1 correct kernel | 18 / 26 (69%) | 0 / 26 |
 | official gate correctness (16 recheckable) | 16 / 16 passed | — |
 | genuinely faster than eager | **1 / 26 (row 804, 1.14×)** | 0 |
-| compile success rate | — | **0 / 13 attempts** |
+| compile success rate | — | **0 / 29 attempts** |
+| tasks producing a parseable write_files at all | 26 / 26 | 15 / 26 |
 
 Two things this establishes. First, **the win rate collapses outside the
 original pool**: 24% on the 51 collected tasks vs 4% on 26 unseen ones. The
@@ -333,6 +334,14 @@ plausible-looking `.cu` file that never compiles — `float6`,
 1)` as a function name, `el<256,16><<<...>>>` in place of `__global__`.
 SFT is not the wrong direction; the positive pool is simply two orders of
 magnitude short of what teaches CUDA.
+
+The complete A/B evidence is in `rollouts/g1_unseen_local.jsonl` /
+`g1_unseen_local.log` (the SFT policy) against `rollouts/g1_unseen.jsonl`
+(the API baseline, same tasks, same pipeline). The 11 tasks where the
+local model produced no parseable `write_files` at all are the flat-prompt
+case of the format problem above: without a `<feedback>` section the model
+sometimes emits a zero-length completion (immediate EOS), which is why the
+compile-attempt count (29) is lower than 26 tasks × 3 attempts.
 
 The pipeline to run that experiment is in this repo: `dataset/rft_filter.py`
 (official-verdict positive filter), `training/sft_smoke.py` (bf16 full
