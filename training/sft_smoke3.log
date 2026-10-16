@@ -1,0 +1,14 @@
+loading model from /data/huggingface_home/hub/models--Qwen--Qwen2.5-Coder-1.5B-Instruct/snapshots/2e1fd397ee46e1388853d2af2c993145b0f1098a
+`torch_dtype` is deprecated! Use `dtype` instead!
+dataset: 12 usable samples (0 skipped — text-only or missing fields)
+GPU before training: 66.7 GB free / 68.3 GB
+
+=== training ===
+0it [00:00, ?it/s]1it [00:06,  6.01s/it]                      1it [00:06,  6.01s/it]                      1it [00:06,  6.01s/it]1it [00:06,  6.06s/it]
+{'loss': 2.9685, 'grad_norm': 52.0, 'learning_rate': 0.0, 'epoch': 0.17}
+{'train_runtime': 6.0662, 'train_samples_per_second': 79.127, 'train_steps_per_second': 0.0, 'train_loss': 2.968489408493042, 'epoch': 0.17}
+
+GPU after training: 6.5 GB free / 68.3 GB
+peak allocator: 34.91 GB
+saved -> /data/maca-agent/training/smoke_model
+check log history

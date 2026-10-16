@@ -8,6 +8,7 @@ forward 里可以含一个 nn.Linear。因此必须解析源码本身。
 每个 nn 模块，都必须是纯 elementwise 算子；输出 dtype 为 float。
 这正是 E4 / F2a 通过门槛的任务分型（G2）。
 """
+import argparse
 import ast
 import json
 from collections import Counter
@@ -29,11 +30,15 @@ TORCH_BINARY = {
     "minimum", "atan2", "copysign", "fmin", "fmax", "lerp",
 }
 NN_ELEMENTWISE = {
-    "ReLU", "Sigmoid", "Tanh", "GELU", "SiLU", "ELU", "LeakyReLU",
-    "Softplus", "Mish", "Hardsigmoid", "Hardswish", "Hardtanh",
-    "LogSigmoid", "CELU", "SELU", "RReLU", "PReLU", "Softsign",
-    "Softshrink", "Tanhshrink", "Threshold", "Softmin", "Identity",
+    "ReLU", "ReLU6", "Sigmoid", "Tanh", "GELU", "SiLU", "ELU",
+    "LeakyReLU", "Hardswish", "Hardsigmoid", "Hardtanh", "Softplus",
+    "Mish", "LogSigmoid", "CELU", "SELU", "RReLU", "PReLU", "Softsign",
+    "Softshrink", "Tanhshrink", "Threshold", "Identity",
 }
+# Softmin / Softmax / LogSoftmax 是 reduction（对通道维归一化），
+# SKILL.md 分型里属硬墙，不是 elementwise —— Softmin 曾错列在白名单内，
+# 导致 row 518/68 等以 nn.Softmin 进入 G1 池（实测 0 correct）。
+# ReLU6 一度漏在白名单外（row 604 官方复测 1.76×，是真赢家）。
 TORCH_PASSTHROUGH = {"stack", "cat"}  # F2a 证实的可融合特例
 
 
@@ -43,6 +48,10 @@ class Collector(ast.NodeVisitor):
     def __init__(self):
         self.module_attrs = set()
         self.torch_calls = set()
+        # forward 里内联构造并立即调用的 nn 模块，如 nn.Softmin(dim=1)(x)。
+        # 这类调用两层 AST 都不匹配原判据：外层 Call 的 func 是内层 Call，
+        # 内层 Call 的 func 是 Attribute(value=Name('nn'))。
+        self.nn_inline_calls = set()
 
     def visit_Call(self, node):
         f = node.func
@@ -51,6 +60,10 @@ class Collector(ast.NodeVisitor):
                 self.torch_calls.add(f.attr)
             elif f.value.id == "self":
                 self.module_attrs.add(f.attr)
+            elif f.value.id == "nn":
+                # 内联构造：nn.Softmin(dim=1)(x)。外层 Call 的 func 是内层
+                # Call，经 generic_visit 递归会再进这里，所以记一次即可。
+                self.nn_inline_calls.add(f.attr)
         elif isinstance(f, ast.Name):
             self.torch_calls.add(f.id)
         self.generic_visit(node)
@@ -103,6 +116,10 @@ def analyze(code):
         cls = constructed.get(attr, "Unknown")
         if cls not in NN_ELEMENTWISE:
             bad.append(f"self.{attr}=nn.{cls}")
+    # forward 内联构造并调用的 nn 模块也必须全在 elementwise 白名单内
+    for cls in coll.nn_inline_calls:
+        if cls not in NN_ELEMENTWISE:
+            bad.append(f"forward nn.{cls}(...)")
     # __init__ 里构造的所有模块都必须是 elementwise —— 排除 nn.Sequential /
     # ModuleList / ModuleDict 等容器（展开后实际算子类型不可知）
     for attr, cls in constructed.items():
@@ -136,7 +153,14 @@ def parse_ops(ops_field):
 
 
 def main():
-    actionable = pd.read_csv("dataset/actionable_tasks.csv")
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--from-csv", default="dataset/actionable_tasks.csv",
+                    help="which actionable pool to read from")
+    ap.add_argument("--out", default="dataset/g1_candidates.csv",
+                    help="where to write the candidate list")
+    args = ap.parse_args()
+
+    actionable = pd.read_csv(args.from_csv)
     df = pd.read_parquet("dataset/data.parquet")
     actionable = actionable[actionable["strategy"] == "direct"].copy()
 
@@ -164,7 +188,7 @@ def main():
     out = pd.DataFrame(rows).sort_values("est_gb")
     print(f"AST-verified pure-elementwise direct tasks: {len(out)}")
     print(out.to_string(index=False))
-    out.to_csv("dataset/g1_candidates.csv", index=False)
+    out.to_csv(args.out, index=False)
 
     c = Counter(r[1].split(";")[0] for r in rejected)
     print(f"\nrejected: {len(rejected)}; top reasons:")

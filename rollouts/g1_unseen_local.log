@@ -1,0 +1,384 @@
+
+=== row 45 (66.72 GB free) ===
+05:48:36 - LiteLLM:WARNING: get_model_cost_map.py:315 - LiteLLM: model cost map fetch attempt 1/3 failed (ReadTimeout fetching https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: The read operation timed out); retrying in 2.3s
+05:48:36 - LiteLLM:WARNING: get_model_cost_map.py:672 - LiteLLM: Failed to fetch remote model cost map from https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: ReadTimeout fetching https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json: The read operation timed out. Falling back to local backup.
+
+--- [row45] LLM attempt 1/3 ---
+The tokenizer you are loading from '/data/maca-agent/training/smoke_model' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+`torch_dtype` is deprecated! Use `dtype` instead!
+The following generation flags are not valid and may be ignored: ['top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+    [local] 1669 tok in 49.6s (33.6 tok/s) stop=tool_use
+    [trace] wrote /data/maca-agent/tasks/row45/trace_dump_nowrite_turn0_1792129774.json
+    [local] 1573 tok in 44.5s (35.3 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.8s]
+
+--- [row45] LLM attempt 2/3 ---
+    [local] 16384 tok in 671.5s (24.4 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row45/trace_dump_nowrite_turn0_1792130509.json
+    [local] 1573 tok in 44.9s (35.0 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.7s]
+
+--- [row45] LLM attempt 3/3 ---
+    [local] 2147 tok in 61.6s (34.9 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row45/trace_dump_nowrite_turn0_1792130634.json
+    [local] 1573 tok in 44.5s (35.3 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.4s]
+row 45: 3 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [987s]
+
+=== row 90 (50.20 GB free) ===
+
+--- [row90] LLM attempt 1/3 ---
+    [local] 1599 tok in 45.1s (35.5 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.2s]
+
+--- [row90] LLM attempt 2/3 ---
+    [local] 1608 tok in 46.2s (34.8 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row90/trace_dump_nowrite_turn0_1792130806.json
+    [local] 1957 tok in 55.5s (35.2 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row90/trace_dump_nowrite_turn1_1792130862.json
+    [local] 1957 tok in 55.9s (35.0 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row90/trace_dump_nowrite_turn2_1792130918.json
+    [trace] wrote /data/maca-agent/tasks/row90/trace_dump_exhausted_3turns_1792130918.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 90: 1 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [221s]
+
+=== row 104 (46.98 GB free) ===
+
+--- [row104] LLM attempt 1/3 ---
+    [local] 1301 tok in 37.1s (35.0 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [15.8s]
+
+--- [row104] LLM attempt 2/3 ---
+    [local] 1215 tok in 34.8s (34.9 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.6s]
+
+--- [row104] LLM attempt 3/3 ---
+    [local] 1627 tok in 46.8s (34.8 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row104/trace_dump_nowrite_turn0_1792131071.json
+    [local] 6384 tok in 205.3s (31.1 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row104/trace_dump_nowrite_turn1_1792131276.json
+    [local] 6384 tok in 205.1s (31.1 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row104/trace_dump_nowrite_turn2_1792131481.json
+    [trace] wrote /data/maca-agent/tasks/row104/trace_dump_exhausted_3turns_1792131481.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 104: 2 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [564s]
+
+=== row 174 (46.98 GB free) ===
+
+--- [row174] LLM attempt 1/3 ---
+    [local] 1423 tok in 41.0s (34.7 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [19.2s]
+
+--- [row174] LLM attempt 2/3 ---
+    [local] 2019 tok in 57.6s (35.1 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row174/trace_dump_nowrite_turn0_1792131599.json
+    [local] 1115 tok in 31.6s (35.3 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row174/trace_dump_nowrite_turn1_1792131631.json
+    [local] 1115 tok in 31.7s (35.1 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row174/trace_dump_nowrite_turn2_1792131663.json
+    [trace] wrote /data/maca-agent/tasks/row174/trace_dump_exhausted_3turns_1792131663.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 174: 1 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [181s]
+
+=== row 213 (43.74 GB free) ===
+
+--- [row213] LLM attempt 1/3 ---
+    [local] 1532 tok in 43.7s (35.0 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.8s]
+
+--- [row213] LLM attempt 2/3 ---
+    [local] 1415 tok in 41.2s (34.4 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row213/trace_dump_nowrite_turn0_1792131766.json
+    [local] 3913 tok in 118.2s (33.1 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row213/trace_dump_nowrite_turn1_1792131885.json
+    [local] 3913 tok in 118.2s (33.1 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row213/trace_dump_nowrite_turn2_1792132003.json
+    [trace] wrote /data/maca-agent/tasks/row213/trace_dump_exhausted_3turns_1792132003.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 213: 1 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [340s]
+
+=== row 215 (40.45 GB free) ===
+
+--- [row215] LLM attempt 1/3 ---
+    [local] 1448 tok in 40.8s (35.5 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [21.8s]
+
+--- [row215] LLM attempt 2/3 ---
+    [local] 1375 tok in 39.4s (34.9 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.4s]
+
+--- [row215] LLM attempt 3/3 ---
+    [local] 1366 tok in 39.2s (34.8 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row215/trace_dump_nowrite_turn0_1792132163.json
+    [local] 1200 tok in 33.8s (35.5 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row215/trace_dump_nowrite_turn1_1792132196.json
+    [local] 1200 tok in 33.7s (35.6 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row215/trace_dump_nowrite_turn2_1792132230.json
+    [trace] wrote /data/maca-agent/tasks/row215/trace_dump_exhausted_3turns_1792132230.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 215: 2 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [227s]
+
+=== row 250 (40.45 GB free) ===
+
+--- [row250] LLM attempt 1/3 ---
+    [local] 1734 tok in 49.2s (35.3 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row250/trace_dump_nowrite_turn0_1792132279.json
+    [local] 1638 tok in 46.5s (35.2 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row250/trace_dump_nowrite_turn1_1792132326.json
+    [local] 1638 tok in 46.7s (35.1 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row250/trace_dump_nowrite_turn2_1792132373.json
+    [trace] wrote /data/maca-agent/tasks/row250/trace_dump_exhausted_3turns_1792132373.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 250: 0 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [142s]
+
+=== row 296 (40.45 GB free) ===
+
+--- [row296] LLM attempt 1/3 ---
+    [local] 1044 tok in 29.6s (35.2 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row296/trace_dump_nowrite_turn0_1792132402.json
+    [local] 16384 tok in 671.8s (24.4 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row296/trace_dump_nowrite_turn1_1792133074.json
+    [local] 16384 tok in 673.2s (24.3 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row296/trace_dump_nowrite_turn2_1792133747.json
+    [trace] wrote /data/maca-agent/tasks/row296/trace_dump_exhausted_3turns_1792133747.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 296: 0 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [1375s]
+
+=== row 361 (40.45 GB free) ===
+
+--- [row361] LLM attempt 1/3 ---
+    [local] 1707 tok in 48.7s (35.0 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.7s]
+
+--- [row361] LLM attempt 2/3 ---
+    [local] 1512 tok in 43.4s (34.8 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row361/trace_dump_nowrite_turn0_1792133858.json
+    [local] 2129 tok in 61.6s (34.6 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row361/trace_dump_nowrite_turn1_1792133920.json
+    [local] 2129 tok in 61.6s (34.6 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row361/trace_dump_nowrite_turn2_1792133981.json
+    [trace] wrote /data/maca-agent/tasks/row361/trace_dump_exhausted_3turns_1792133981.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 361: 1 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [234s]
+
+=== row 397 (40.45 GB free) ===
+
+--- [row397] LLM attempt 1/3 ---
+    [local] 1570 tok in 44.5s (35.3 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row397/trace_dump_nowrite_turn0_1792134026.json
+    [local] 1134 tok in 31.9s (35.6 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row397/trace_dump_nowrite_turn1_1792134058.json
+    [local] 1134 tok in 31.9s (35.6 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row397/trace_dump_nowrite_turn2_1792134090.json
+    [trace] wrote /data/maca-agent/tasks/row397/trace_dump_exhausted_3turns_1792134090.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 397: 0 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [108s]
+
+=== row 468 (40.45 GB free) ===
+
+--- [row468] LLM attempt 1/3 ---
+    [local] 1711 tok in 49.1s (34.8 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [15.6s]
+
+--- [row468] LLM attempt 2/3 ---
+    [local] 1945 tok in 56.0s (34.7 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.4s]
+
+--- [row468] LLM attempt 3/3 ---
+    [local] 2972 tok in 87.8s (33.8 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row468/trace_dump_nowrite_turn0_1792134317.json
+    [local] 1578 tok in 45.0s (35.1 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row468/trace_dump_nowrite_turn1_1792134362.json
+    [local] 1578 tok in 45.4s (34.8 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row468/trace_dump_nowrite_turn2_1792134407.json
+    [trace] wrote /data/maca-agent/tasks/row468/trace_dump_exhausted_3turns_1792134407.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 468: 2 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [317s]
+
+=== row 473 (40.45 GB free) ===
+
+--- [row473] LLM attempt 1/3 ---
+    [local] 1321 tok in 37.3s (35.4 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [16.0s]
+
+--- [row473] LLM attempt 2/3 ---
+    [local] 1497 tok in 42.7s (35.0 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.1s]
+
+--- [row473] LLM attempt 3/3 ---
+    [local] 1380 tok in 39.3s (35.1 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row473/trace_dump_nowrite_turn0_1792134561.json
+    [local] 16384 tok in 671.8s (24.4 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row473/trace_dump_nowrite_turn1_1792135233.json
+    [local] 16384 tok in 672.3s (24.4 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row473/trace_dump_nowrite_turn2_1792135905.json
+    [trace] wrote /data/maca-agent/tasks/row473/trace_dump_exhausted_3turns_1792135905.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 473: 2 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [1498s]
+
+=== row 558 (40.45 GB free) ===
+
+--- [row558] LLM attempt 1/3 ---
+    [local] 1116 tok in 31.7s (35.2 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.6s]
+
+--- [row558] LLM attempt 2/3 ---
+    [local] 1944 tok in 55.8s (34.8 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.4s]
+
+--- [row558] LLM attempt 3/3 ---
+    [local] 1731 tok in 49.6s (34.9 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.5s]
+row 558: 3 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [193s]
+
+=== row 562 (40.45 GB free) ===
+
+--- [row562] LLM attempt 1/3 ---
+    [local] 1514 tok in 42.9s (35.3 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.5s]
+
+--- [row562] LLM attempt 2/3 ---
+    [local] 1399 tok in 40.4s (34.6 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [15.8s]
+
+--- [row562] LLM attempt 3/3 ---
+    [local] 2697 tok in 78.7s (34.3 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row562/trace_dump_nowrite_turn0_1792136294.json
+    [local] 1062 tok in 30.0s (35.4 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [15.8s]
+row 562: 3 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [242s]
+
+=== row 690 (40.45 GB free) ===
+
+--- [row690] LLM attempt 1/3 ---
+    [local] 185 tok in 5.7s (32.3 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row690/trace_dump_nowrite_turn0_1792136345.json
+    [local] 1513 tok in 42.8s (35.3 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row690/trace_dump_nowrite_turn1_1792136388.json
+    [local] 1513 tok in 42.9s (35.3 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row690/trace_dump_nowrite_turn2_1792136431.json
+    [trace] wrote /data/maca-agent/tasks/row690/trace_dump_exhausted_3turns_1792136431.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 690: 0 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [92s]
+
+=== row 804 (40.45 GB free) ===
+
+--- [row804] LLM attempt 1/3 ---
+    [local] 1417 tok in 40.4s (35.0 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row804/trace_dump_nowrite_turn0_1792136472.json
+    [local] 1270 tok in 36.0s (35.3 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row804/trace_dump_nowrite_turn1_1792136508.json
+    [local] 1270 tok in 36.2s (35.1 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row804/trace_dump_nowrite_turn2_1792136544.json
+    [trace] wrote /data/maca-agent/tasks/row804/trace_dump_exhausted_3turns_1792136544.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 804: 0 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [113s]
+
+=== row 1092 (40.45 GB free) ===
+
+--- [row1092] LLM attempt 1/3 ---
+    [local] 1811 tok in 52.1s (34.8 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row1092/trace_dump_nowrite_turn0_1792136596.json
+    [local] 1388 tok in 39.4s (35.2 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row1092/trace_dump_nowrite_turn1_1792136635.json
+    [local] 1388 tok in 39.5s (35.2 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row1092/trace_dump_nowrite_turn2_1792136675.json
+    [trace] wrote /data/maca-agent/tasks/row1092/trace_dump_exhausted_3turns_1792136675.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 1092: 0 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [131s]
+
+=== row 1199 (40.45 GB free) ===
+
+--- [row1199] LLM attempt 1/3 ---
+    [local] 1279 tok in 36.4s (35.1 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.2s]
+
+--- [row1199] LLM attempt 2/3 ---
+    [local] 2089 tok in 60.5s (34.5 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row1199/trace_dump_nowrite_turn0_1792136790.json
+    [local] 1287 tok in 36.7s (35.1 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row1199/trace_dump_nowrite_turn1_1792136827.json
+    [local] 1287 tok in 36.8s (34.9 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row1199/trace_dump_nowrite_turn2_1792136863.json
+    [trace] wrote /data/maca-agent/tasks/row1199/trace_dump_exhausted_3turns_1792136863.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 1199: 1 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [189s]
+
+=== row 1272 (40.45 GB free) ===
+
+--- [row1272] LLM attempt 1/3 ---
+    [local] 1759 tok in 50.5s (34.9 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row1272/trace_dump_nowrite_turn0_1792136914.json
+    [local] 1323 tok in 37.5s (35.3 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row1272/trace_dump_nowrite_turn1_1792136951.json
+    [local] 1323 tok in 37.7s (35.1 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row1272/trace_dump_nowrite_turn2_1792136989.json
+    [trace] wrote /data/maca-agent/tasks/row1272/trace_dump_exhausted_3turns_1792136989.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 1272: 0 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [126s]
+
+=== row 2472 (40.45 GB free) ===
+
+--- [row2472] LLM attempt 1/3 ---
+    [local] 1432 tok in 41.0s (34.9 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row2472/trace_dump_nowrite_turn0_1792137030.json
+    [local] 1383 tok in 39.6s (34.9 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row2472/trace_dump_nowrite_turn1_1792137070.json
+    [local] 1383 tok in 39.8s (34.8 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row2472/trace_dump_nowrite_turn2_1792137110.json
+    [trace] wrote /data/maca-agent/tasks/row2472/trace_dump_exhausted_3turns_1792137110.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 2472: 0 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [120s]
+
+=== row 2582 (40.45 GB free) ===
+
+--- [row2582] LLM attempt 1/3 ---
+    [local] 49 tok in 2.1s (23.7 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row2582/trace_dump_nowrite_turn0_1792137112.json
+    [local] 1674 tok in 47.7s (35.1 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.6s]
+
+--- [row2582] LLM attempt 2/3 ---
+    [local] 1251 tok in 35.8s (34.9 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row2582/trace_dump_nowrite_turn0_1792137214.json
+    [local] 1674 tok in 47.9s (35.0 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.2s]
+
+--- [row2582] LLM attempt 3/3 ---
+    [local] 1513 tok in 43.5s (34.8 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row2582/trace_dump_nowrite_turn0_1792137324.json
+    [local] 1674 tok in 48.3s (34.7 tok/s) stop=tool_use
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.3s]
+row 2582: 3 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [280s]
+
+=== row 2720 (40.45 GB free) ===
+
+--- [row2720] LLM attempt 1/3 ---
+    [local] 1737 tok in 49.2s (35.3 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row2720/trace_dump_nowrite_turn0_1792137439.json
+    [local] 1430 tok in 40.6s (35.2 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row2720/trace_dump_nowrite_turn1_1792137480.json
+    [local] 1430 tok in 40.7s (35.2 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row2720/trace_dump_nowrite_turn2_1792137521.json
+    [trace] wrote /data/maca-agent/tasks/row2720/trace_dump_exhausted_3turns_1792137521.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 2720: 0 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [131s]
+
+=== row 2824 (40.45 GB free) ===
+
+--- [row2824] LLM attempt 1/3 ---
+    [local] 1105 tok in 31.7s (34.8 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row2824/trace_dump_nowrite_turn0_1792137552.json
+    [local] 1673 tok in 48.3s (34.7 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row2824/trace_dump_nowrite_turn1_1792137601.json
+    [local] 1673 tok in 47.9s (34.9 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row2824/trace_dump_nowrite_turn2_1792137649.json
+    [trace] wrote /data/maca-agent/tasks/row2824/trace_dump_exhausted_3turns_1792137649.json
+    model call failed: RuntimeError: model did not produce files in 3 turns
+row 2824: 0 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [128s]
+
+=== row 2854 (40.45 GB free) ===
+
+--- [row2854] LLM attempt 1/3 ---
+    [local] 1570 tok in 44.6s (35.2 tok/s) stop=end_turn
+    [trace] wrote /data/maca-agent/tasks/row2854/trace_dump_nowrite_turn0_1792137693.json

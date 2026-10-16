@@ -1,0 +1,427 @@
+
+=== row 45 (66.72 GB free) ===
+
+--- [row45] LLM attempt 1/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.4s]
+
+--- [row45] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [21.9s]
+
+--- [row45] LLM attempt 3/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.0s]
+row 45: 3 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [214s]
+
+=== row 90 (66.72 GB free) ===
+
+--- [row90] LLM attempt 1/3 ---
+    compiled=True correct=True ext=7025.8us compile=7942.6us -> reward 1.0 (pass_1.13x_vs_compile) [85.3s]
+    [GATE PASSED] 1.13x
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=7.03ms ref=5.78ms
+row 90: 1 row(s), 1 correct (reward>=0.5), 1 passed bar (compile>=1.05x), kernelbench=True [166s]
+
+=== row 104 (64.50 GB free) ===
+
+--- [row104] LLM attempt 1/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [21.6s]
+
+--- [row104] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.2s]
+
+--- [row104] LLM attempt 3/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.5s]
+row 104: 3 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [210s]
+
+=== row 174 (64.50 GB free) ===
+
+--- [row174] LLM attempt 1/3 ---
+    compiled=True correct=True ext=8301.1us compile=7956.1us -> reward 0.5 (correct_slow_0.96x_vs_compile) [82.0s]
+
+--- [row174] LLM attempt 2/3 ---
+    compiled=True correct=True ext=8282.1us compile=7955.9us -> reward 0.5 (correct_slow_0.96x_vs_compile) [81.9s]
+
+--- [row174] LLM attempt 3/3 ---
+    compiled=True correct=True ext=9661.0us compile=7977.2us -> reward 0.5 (correct_slow_0.83x_vs_compile) [83.0s]
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=9.62ms ref=2.75ms
+row 174: 3 row(s), 3 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=True [423s]
+
+=== row 213 (32.24 GB free) ===
+
+--- [row213] LLM attempt 1/3 ---
+    compiled=True correct=True ext=10369.7us compile=9685.2us -> reward 0.5 (correct_slow_0.93x_vs_compile) [82.4s]
+
+--- [row213] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.5s]
+
+--- [row213] LLM attempt 3/3 ---
+    compiled=True correct=True ext=9376.2us compile=10099.7us -> reward 1.0 (pass_1.08x_vs_compile) [83.5s]
+    [GATE PASSED] 1.08x
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=9.42ms ref=3.68ms
+row 213: 3 row(s), 2 correct (reward>=0.5), 1 passed bar (compile>=1.05x), kernelbench=True [343s]
+
+=== row 215 (32.10 GB free) ===
+
+--- [row215] LLM attempt 1/3 ---
+    compiled=True correct=True ext=16607.7us compile=8913.8us -> reward 0.5 (correct_slow_0.54x_vs_compile) [83.3s]
+
+--- [row215] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.0s]
+
+--- [row215] LLM attempt 3/3 ---
+    compiled=True correct=True ext=9363.5us compile=9562.8us -> reward 0.5 (correct_slow_1.02x_vs_compile) [83.6s]
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=11.1ms ref=2.9ms
+row 215: 3 row(s), 2 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=True [325s]
+
+=== row 250 (32.10 GB free) ===
+
+--- [row250] LLM attempt 1/3 ---
+    compiled=True correct=False ext=0.0us compile=0.0us -> reward 0.1 (compiled_but_incorrect) [38.0s]
+
+--- [row250] LLM attempt 2/3 ---
+    compiled=True correct=True ext=4199.4us compile=3067.9us -> reward 0.5 (correct_slow_0.73x_vs_compile) [82.8s]
+
+--- [row250] LLM attempt 3/3 ---
+    compiled=True correct=True ext=4062.1us compile=2884.6us -> reward 0.5 (correct_slow_0.71x_vs_compile) [83.9s]
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=3.51ms ref=2.9ms
+row 250: 3 row(s), 2 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=True [354s]
+
+=== row 296 (32.10 GB free) ===
+
+--- [row296] LLM attempt 1/3 ---
+    [trace] wrote /data/maca-agent/tasks/row296/trace_dump_nowrite_turn0_1792122112.json
+    compiled=True correct=False ext=0.0us compile=0.0us -> reward 0.1 (compiled_but_incorrect) [38.7s]
+
+--- [row296] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [21.9s]
+
+--- [row296] LLM attempt 3/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.1s]
+row 296: 3 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [332s]
+
+=== row 361 (32.10 GB free) ===
+
+--- [row361] LLM attempt 1/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.6s]
+
+--- [row361] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.0s]
+
+--- [row361] LLM attempt 3/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [21.9s]
+row 361: 3 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [178s]
+
+=== row 397 (64.48 GB free) ===
+
+--- [row397] LLM attempt 1/3 ---
+    compiled=True correct=True ext=9178.5us compile=8832.7us -> reward 0.5 (correct_slow_0.96x_vs_compile) [85.3s]
+
+--- [row397] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [21.8s]
+
+--- [row397] LLM attempt 3/3 ---
+    compiled=True correct=True ext=9173.0us compile=8836.9us -> reward 0.5 (correct_slow_0.96x_vs_compile) [83.4s]
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=9.66ms ref=3.01ms
+row 397: 3 row(s), 2 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=True [319s]
+
+=== row 468 (53.86 GB free) ===
+
+--- [row468] LLM attempt 1/3 ---
+    compiled=True correct=False ext=0.0us compile=0.0us -> reward 0.1 (compiled_but_incorrect) [40.0s]
+
+--- [row468] LLM attempt 2/3 ---
+    compiled=True correct=True ext=13501.9us compile=12963.8us -> reward 0.5 (correct_slow_0.96x_vs_compile) [95.5s]
+
+--- [row468] LLM attempt 3/3 ---
+    compiled=True correct=True ext=13157.5us compile=12967.1us -> reward 0.5 (correct_slow_0.99x_vs_compile) [95.7s]
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=14.2ms ref=4.46ms
+row 468: 3 row(s), 2 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=True [408s]
+
+=== row 473 (54.67 GB free) ===
+
+--- [row473] LLM attempt 1/3 ---
+    compiled=True correct=True ext=8329.4us compile=8595.4us -> reward 0.5 (correct_slow_1.03x_vs_compile) [81.2s]
+
+--- [row473] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.8s]
+
+--- [row473] LLM attempt 3/3 ---
+    compiled=True correct=True ext=11244.7us compile=7955.1us -> reward 0.5 (correct_slow_0.71x_vs_compile) [82.1s]
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=8.08ms ref=2.7ms
+row 473: 3 row(s), 2 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=True [301s]
+
+=== row 558 (64.61 GB free) ===
+
+--- [row558] LLM attempt 1/3 ---
+    compiled=True correct=True ext=3196.6us compile=2854.4us -> reward 0.5 (correct_slow_0.89x_vs_compile) [84.2s]
+
+--- [row558] LLM attempt 2/3 ---
+    compiled=True correct=True ext=6689.5us compile=3435.2us -> reward 0.5 (correct_slow_0.51x_vs_compile) [84.8s]
+
+--- [row558] LLM attempt 3/3 ---
+    compiled=True correct=True ext=3156.6us compile=3467.0us -> reward 1.0 (pass_1.10x_vs_compile) [84.2s]
+    [GATE PASSED] 1.10x
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=3.15ms ref=3.04ms
+row 558: 3 row(s), 3 correct (reward>=0.5), 1 passed bar (compile>=1.05x), kernelbench=True [435s]
+
+=== row 562 (55.74 GB free) ===
+
+--- [row562] LLM attempt 1/3 ---
+    compiled=True correct=False ext=0.0us compile=0.0us -> reward 0.1 (compiled_but_incorrect) [40.6s]
+
+--- [row562] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.0s]
+
+--- [row562] LLM attempt 3/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [21.9s]
+row 562: 3 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [290s]
+
+=== row 690 (64.48 GB free) ===
+
+--- [row690] LLM attempt 1/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.5s]
+
+--- [row690] LLM attempt 2/3 ---
+    compiled=True correct=False ext=0.0us compile=0.0us -> reward 0.1 (compiled_but_incorrect) [37.3s]
+
+--- [row690] LLM attempt 3/3 ---
+    compiled=True correct=False ext=0.0us compile=0.0us -> reward 0.1 (compiled_but_incorrect) [37.9s]
+row 690: 3 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [220s]
+
+=== row 804 (64.48 GB free) ===
+
+--- [row804] LLM attempt 1/3 ---
+    compiled=True correct=True ext=12903.5us compile=12731.6us -> reward 0.5 (correct_slow_0.99x_vs_compile) [94.9s]
+
+--- [row804] LLM attempt 2/3 ---
+    compiled=True correct=False ext=0.0us compile=0.0us -> reward 0.1 (compiled_but_incorrect) [39.6s]
+
+--- [row804] LLM attempt 3/3 ---
+    compiled=True correct=True ext=12758.7us compile=12730.8us -> reward 0.5 (correct_slow_1.00x_vs_compile) [94.1s]
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=12.7ms ref=14.6ms
+row 804: 3 row(s), 2 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=True [384s]
+
+=== row 1092 (63.40 GB free) ===
+
+--- [row1092] LLM attempt 1/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.1s]
+
+--- [row1092] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.0s]
+
+--- [row1092] LLM attempt 3/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.5s]
+row 1092: 3 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [195s]
+
+=== row 1199 (63.40 GB free) ===
+
+--- [row1199] LLM attempt 1/3 ---
+    [trace] wrote /data/maca-agent/tasks/row1199/trace_dump_missing_turn0_1792125216.json
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [18.6s]
+
+--- [row1199] LLM attempt 2/3 ---
+    compiled=True correct=False ext=0.0us compile=0.0us -> reward 0.1 (compiled_but_incorrect) [35.8s]
+
+--- [row1199] LLM attempt 3/3 ---
+    compiled=True correct=True ext=16715.8us compile=16309.5us -> reward 0.5 (correct_slow_0.98x_vs_compile) [74.2s]
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=False runtime=-1.0ms ref=6.07ms
+row 1199: 3 row(s), 1 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [372s]
+
+=== row 1272 (65.25 GB free) ===
+
+--- [row1272] LLM attempt 1/3 ---
+    compiled=True correct=True ext=23287.3us compile=17454.2us -> reward 0.5 (correct_slow_0.75x_vs_compile) [107.8s]
+
+--- [row1272] LLM attempt 2/3 ---
+    compiled=True correct=True ext=17700.6us compile=17452.0us -> reward 0.5 (correct_slow_0.99x_vs_compile) [108.6s]
+
+--- [row1272] LLM attempt 3/3 ---
+    compiled=True correct=True ext=18111.4us compile=17453.2us -> reward 0.5 (correct_slow_0.96x_vs_compile) [108.7s]
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=18.1ms ref=5.77ms
+row 1272: 3 row(s), 3 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=True [469s]
+
+=== row 2472 (62.29 GB free) ===
+
+--- [row2472] LLM attempt 1/3 ---
+    compiled=True correct=True ext=6808.6us compile=6642.3us -> reward 0.5 (correct_slow_0.98x_vs_compile) [82.4s]
+
+--- [row2472] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.6s]
+
+--- [row2472] LLM attempt 3/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.4s]
+Traceback (most recent call last):
+  File "/data/maca-harness/KernelBench/src/kernelbench/eval.py", line 790, in run_and_check_correctness
+    output_new = model_new(*inputs)
+  File "/opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "<string>", line 15, in forward
+AttributeError: module 'cuda_extension' has no attribute 'exp_sigmoid_forward'. Did you mean: 'elu_sigmoid_forward'?
+[Error] Exception happens during correctness check
+Error in launching kernel for ModelNew: module 'cuda_extension' has no attribute 'exp_sigmoid_forward'
+
+[Full Traceback]:
+
+
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=False runtime=-1.0ms ref=5.76ms
+row 2472: 3 row(s), 1 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [232s]
+
+=== row 2582 (64.44 GB free) ===
+
+--- [row2582] LLM attempt 1/3 ---
+    compiled=True correct=True ext=1815200.9us compile=3333.9us -> reward 0.5 (correct_slow_0.00x_vs_compile) [102.0s]
+
+--- [row2582] LLM attempt 2/3 ---
+    compiled=True correct=True ext=3419.2us compile=3347.5us -> reward 0.5 (correct_slow_0.98x_vs_compile) [71.1s]
+
+--- [row2582] LLM attempt 3/3 ---
+    compiled=True correct=True ext=3520.0us compile=3323.4us -> reward 0.5 (correct_slow_0.94x_vs_compile) [71.4s]
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=3.53ms ref=2.89ms
+row 2582: 3 row(s), 3 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=True [372s]
+
+=== row 2720 (65.51 GB free) ===
+
+--- [row2720] LLM attempt 1/3 ---
+    compiled=True correct=False ext=0.0us compile=0.0us -> reward 0.1 (compiled_but_incorrect) [48.2s]
+
+--- [row2720] LLM attempt 2/3 ---
+    compiled=True correct=False ext=0.0us compile=0.0us -> reward 0.1 (compiled_but_incorrect) [49.2s]
+
+--- [row2720] LLM attempt 3/3 ---
+    compiled=True correct=False ext=0.0us compile=0.0us -> reward 0.1 (compiled_but_incorrect) [49.8s]
+row 2720: 3 row(s), 0 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [292s]
+
+=== row 2824 (65.51 GB free) ===
+
+--- [row2824] LLM attempt 1/3 ---
+    compiled=True correct=True ext=6581.9us compile=6486.8us -> reward 0.5 (correct_slow_0.99x_vs_compile) [77.2s]
+
+--- [row2824] LLM attempt 2/3 ---
+    compiled=True correct=True ext=6743.3us compile=6486.6us -> reward 0.5 (correct_slow_0.96x_vs_compile) [77.1s]
+
+--- [row2824] LLM attempt 3/3 ---
+    compiled=True correct=True ext=6576.5us compile=6485.6us -> reward 0.5 (correct_slow_0.99x_vs_compile) [77.3s]
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=6.59ms ref=4.32ms
+row 2824: 3 row(s), 3 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=True [377s]
+
+=== row 2854 (64.97 GB free) ===
+
+--- [row2854] LLM attempt 1/3 ---
+    compiled=True correct=True ext=2987.7us compile=2897.6us -> reward 0.5 (correct_slow_0.97x_vs_compile) [83.7s]
+
+--- [row2854] LLM attempt 2/3 ---
+    compiled=True correct=True ext=2988.5us compile=2897.4us -> reward 0.5 (correct_slow_0.97x_vs_compile) [83.7s]
+
+--- [row2854] LLM attempt 3/3 ---
+    compiled=True correct=True ext=3213.0us compile=2896.2us -> reward 0.5 (correct_slow_0.90x_vs_compile) [83.6s]
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=3.22ms ref=2.9ms
+row 2854: 3 row(s), 3 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=True [420s]
+
+=== row 3126 (64.44 GB free) ===
+
+--- [row3126] LLM attempt 1/3 ---
+    compiled=True correct=True ext=3044.3us compile=2856.7us -> reward 0.5 (correct_slow_0.94x_vs_compile) [83.4s]
+
+--- [row3126] LLM attempt 2/3 ---
+    compiled=True correct=True ext=3297.9us compile=2857.2us -> reward 0.5 (correct_slow_0.87x_vs_compile) [84.1s]
+
+--- [row3126] LLM attempt 3/3 ---
+    compiled=True correct=True ext=3017.4us compile=2857.9us -> reward 0.5 (correct_slow_0.95x_vs_compile) [83.0s]
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=True runtime=3.02ms ref=2.89ms
+row 3126: 3 row(s), 3 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=True [350s]
+
+=== row 3246 (64.44 GB free) ===
+
+--- [row3246] LLM attempt 1/3 ---
+    compiled=True correct=True ext=2980.3us compile=2855.0us -> reward 0.5 (correct_slow_0.96x_vs_compile) [84.2s]
+
+--- [row3246] LLM attempt 2/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [22.2s]
+
+--- [row3246] LLM attempt 3/3 ---
+    compiled=False correct=False ext=0.0us compile=0.0us -> reward 0.0 (compile_failed) [21.7s]
+Traceback (most recent call last):
+  File "/data/maca-harness/KernelBench/src/kernelbench/eval.py", line 790, in run_and_check_correctness
+    output_new = model_new(*inputs)
+  File "/opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "<string>", line 11, in forward
+AttributeError: module 'cuda_extension' has no attribute 'leaky_relu_forward'. Did you mean: 'fused_relu_forward'?
+[Error] Exception happens during correctness check
+Error in launching kernel for ModelNew: module 'cuda_extension' has no attribute 'leaky_relu_forward'
+
+[Full Traceback]:
+
+
+[Profiling] Using timing method: cuda_event
+[Profiling] Using device: 0 MetaX C500, warm up 3, trials 10
+    [KernelBench gate] compiled=True correctness=False runtime=-1.0ms ref=2.89ms
+row 3246: 3 row(s), 1 correct (reward>=0.5), 0 passed bar (compile>=1.05x), kernelbench=False [282s]
+
+=== done: 15 passed, 11 failed, 0 skipped ===

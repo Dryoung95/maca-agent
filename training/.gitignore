@@ -1,0 +1,4 @@
+# Fine-tuned policy weights are regenerable: training/sft_smoke.py rebuilds
+# smoke_model from rollouts/rft_positives.jsonl in ~25 min on one GPU.
+# 2.9 GB of safetensors does not belong in git.
+training/smoke_model/

@@ -76,8 +76,14 @@ easy to get wrong on THIS device and will fail your build or correctness check:
   thread per element reaches only ~600 GB/s; float2 loads with a fixed
   ~1024-block grid-stride loop reach ~1300 GB/s against a ~1350 GB/s ceiling.
 - A chain of two special-function units on the same value (expf feeding
-  log1pf, as in softplus) starves the scheduler and loses to eager. Restate
-  the computation or expect to lose.
+  log1pf, as in softplus) starves the scheduler: a fused `expf->log1pf`
+  kernel measures ~0.5x. The fix is the algebraic restatement
+  `log1p(exp(y)) = y + log1p(e^-y)`, which breaks the dependency and is a
+  large real gain — but measured under the official KernelBench protocol
+  (reference = eager) the restated kernel still ran 0.77x on this device.
+  Treat chained-SFU tasks as stretch targets, not sweet spots: try the
+  restate if you have budget, but prefer a memory-bound fusion where the
+  traffic savings are real.
 
 The reference model is provided as model.py. Do not modify it, utils/, \
 binding.cpp, or binding_registry.h.
@@ -177,8 +183,19 @@ def call_model(messages, system, max_tokens=16384, model=None):
     from anthropic import (APIConnectionError, APIStatusError,
                            APITimeoutError)
 
-    client = Anthropic(timeout=1800.0)
     model = model or os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
+
+    # Local-weights dispatch: `backend:local:<path>` (or an existing
+    # directory) runs a fine-tuned policy through the same call site, so a
+    # collection/eval run measures the policy and nothing else. The API
+    # path below is unchanged in behavior.
+    import local_backend
+    if local_backend.is_local_spec(model):
+        path = local_backend.local_path_from(model)
+        return local_backend.call_model_local(
+            messages, system, max_tokens=max_tokens, model_path=path)
+
+    client = Anthropic(timeout=1800.0)
 
     RETRIES = 3
     wait = [10, 30, 90]

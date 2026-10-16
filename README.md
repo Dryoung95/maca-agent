@@ -253,15 +253,50 @@ reward) triples, via `dataset/collect_rollouts.py`:
 |---|---|
 | tasks collected | 51 / 51 |
 | rollout rows | 136 |
-| correct kernels | 57 |
+| tasks producing ≥1 correct kernel | 33 |
 | tasks passing SKILL.md's 1.05× bar vs torch.compile | **12** |
-| KernelBench official gate passed | 12 |
+| tasks genuinely faster than eager under the official KernelBench protocol | **12** (geomean 1.61×) |
 
-Best results are 2.10× (softplus+ReLU), 2.04× (ReLU+log1p), 1.42×
-(tanh+mish) — all beating `torch.compile` comfortably. Every
-`nn.Softmax`/`LogSoftmax`/`Softmin` task (6) produced 0 correct kernels,
-matching the task typing: reductions are not winnable by elementwise fusion,
-and those rows are legitimate negative samples.
+**The two "12"s measure different things and are something of a coincidence
+of size.** The 1.05× bar compares against `torch.compile`, but
+`torch.compile` on this device frequently regresses below eager, so beating
+it is not the same as winning. 28 of the 33 correct tasks were re-run under
+the official protocol (fresh process, `cuda_event`, fp32 1e-4, reference =
+eager), which is the number the paper actually reports:
+
+- Of the 12 bar-passers, rows 299 and 2871 **fail the gate's correctness**
+  (`max_difference` 8.25e-4 / 4.44e-4 vs the official 1e-4; our own
+  `utils/verification.py` uses atol=rtol=1e-2, which is why the episode
+  accepted them). Six more pass correctness but are **slower than the eager
+  reference** (0.42×–0.85×) — they beat `torch.compile` only because
+  `torch.compile` itself regressed below eager on those tasks. Only 4 of the
+  12 bar-passers are real wins.
+- Eight further wins were found **outside** the bar-passing set: rows 792
+  (1.91×), 1833 (1.84×), 55 (1.78×), 311 (1.76×), 604 (1.76×), 2081 (1.77×),
+  196 (1.23×), 288 (1.11×). Row 311 is the clearest case of the bar
+  mislabeling: internal profiling read 0.95× vs `torch.compile` (negative),
+  while the official protocol reads 1.76× vs eager (a win).
+
+So the headline is **12 of 51 tasks (24%) genuinely faster than eager,
+geomean 1.61×** — but only 4 of them are also bar-passers. Any filter keyed
+on `compile_speedup` alone would have discarded row 311 while promoting row
+480, which is slower than eager. The bar semantics (vs-compile / vs-eager)
+is a decision still pending; see the stage-1 audit in LOOP_PLAN.md.
+
+The internal `eager_speedup` field turned out to be a usable cheap
+pre-filter for this: on the 16 rechecked non-bar tasks, `eager_speedup ≥ 1.0`
+had 100% recall and 62% precision against the official verdict — it never
+missed a real winner, but let through five tasks in the 1.2–1.3× internal
+range that were actually 0.6× under the official protocol. The official
+recheck remains the arbiter; the internal number is a triage signal only.
+
+5 of the 33 correct tasks (rows 60, 162, 216, 372, 5579) could not be
+rechecked because a later attempt overwrote the correct artifacts on disk —
+`run_llm_episode` keeps the last attempt's files, not the best one.
+
+Every `nn.Softmax`/`LogSoftmax`/`Softmin` task (6) produced 0 correct
+kernels, matching the task typing: reductions are not winnable by
+elementwise fusion, and those rows are legitimate negative samples.
 
 **Three endpoint bugs had to be fixed before any of this was collectable** —
 see the gotchas below. Per-episode wall time is ~4–9 min; before the fixes it
@@ -271,6 +306,62 @@ Reading these numbers, note that ~11 tasks were collected before the
 cross-attempt feedback loop was fixed (the compile stderr was silently
 dropped, see G10 in LOOP_PLAN.md), so their 0-correct results understate the
 model. The 12 passes all came after that fix.
+
+**Unseen-task control and the SFT A/B (2026-10-16).** To test whether the
+12 positives are enough to fine-tune a policy, 26 further tasks were drawn
+from the same AST-verified pool with no overlap with the training positives,
+collected with the identical pipeline (`rollouts/g1_unseen.jsonl`), then
+rechecked under the official protocol
+(`rollouts/gate_recheck_unseen.log`):
+
+| | API model (claude-sonnet-4) | SFT Qwen2.5-Coder-1.5B (12 positives) |
+|---|---|---|
+| tasks with ≥1 correct kernel | 18 / 26 (69%) | 0 / 10 (first 10 tasks) |
+| official gate correctness (16 recheckable) | 16 / 16 passed | — |
+| genuinely faster than eager | **1 / 26 (row 804, 1.14×)** | 0 |
+| compile success rate | — | **0 / 13 attempts** |
+
+Two things this establishes. First, **the win rate collapses outside the
+original pool**: 24% on the 51 collected tasks vs 4% on 26 unseen ones. The
+12 winners were concentrated on the tasks already harvested; the marginal
+yield of expanding the pool is an order of magnitude worse than the
+stage-1 average. Second, **12 positives teach the output protocol but not
+kernel semantics**. The fine-tuned model reliably emits a well-formed
+`write_files` call (which generalizes to tasks it never saw) with a
+plausible-looking `.cu` file that never compiles — `float6`,
+`fmin(max(0, z, 0))` (three args to a two-arg function), `stephen(exp(x) -
+1)` as a function name, `el<256,16><<<...>>>` in place of `__global__`.
+SFT is not the wrong direction; the positive pool is simply two orders of
+magnitude short of what teaches CUDA.
+
+The pipeline to run that experiment is in this repo: `dataset/rft_filter.py`
+(official-verdict positive filter), `training/sft_smoke.py` (bf16 full
+fine-tune, 28 GB peak, ~25 min for 90 steps on this card), and
+`agent_workdir/local_backend.py` (drives the agent loop with local weights
+via `--model backend:local:<path>`, so a collection/eval run measures the
+policy itself).
+
+Two integration bugs had to be found and fixed before the A/B was
+meaningful, both silent rather than loud:
+
+- **Train/inference prompt format mismatch.** The recorded `prompt` field
+  that SFT trains on is `build_user_prompt()`'s flat text (SKILL.md +
+  model.py + feedback, no chat markers, no system prompt). Wrapping it in
+  `apply_chat_template` at inference injects `<|im_start|>` tokens the
+  model never saw in training, and it silently regresses to prose: the
+  same weights produce zero tool calls under the chat template and a
+  well-formed tool call on the verbatim flat prompt. `local_backend.py`
+  therefore feeds the flat text and takes the **last** user message
+  (collection rebuilds the full prompt every turn, so concatenating the
+  history would duplicate SKILL.md and drift off-distribution).
+- **Content blocks must support attribute access.** `extract_attempt`,
+  `_content_to_jsonable` and `_content_to_api` all read
+  `block.type/.name/.input` as attributes (they are written against
+  Anthropic SDK objects). Returning plain dicts makes `getattr` yield
+  `None`, so `extract_attempt` reports "no write_files call" and the agent
+  loop spins every turn re-prompting — while the log clearly shows
+  `stop=tool_use`. This is only visible by running the real entry point
+  `make_attempt_from_llm`, not by unit-testing the backend in isolation.
 
 ## Known platform gotchas
 
